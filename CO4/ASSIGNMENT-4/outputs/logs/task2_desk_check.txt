@@ -1,0 +1,123 @@
+==============================================================================
+TASK 2.4  DESK-CHECK TABLE  (8 students)
+  Attendance Assignments Internal Result
+1       High        Done     Good   Pass
+2       High        Done     Poor   Pass
+3       High      Missed     Good   Pass
+4       High      Missed     Poor   Fail
+5        Low        Done     Good   Pass
+6        Low        Done     Poor   Fail
+7        Low      Missed     Good   Fail
+8        Low      Missed     Poor   Fail
+==============================================================================
+H(Result) = H(4 Pass, 4 Fail) = 1.0000 bits
+
+-- Full ID3 trace produced by the code --
+[root] parent counts {'Fail': 4, 'Pass': 4}  impurity(entropy) = 1.0000
+[root]    Attendance     gain = 0.1887
+        High: 4/8 {'Fail': 1, 'Pass': 3} imp=0.8113
+        Low: 4/8 {'Fail': 3, 'Pass': 1} imp=0.8113
+[root]    Assignments    gain = 0.1887
+        Done: 4/8 {'Fail': 1, 'Pass': 3} imp=0.8113
+        Missed: 4/8 {'Fail': 3, 'Pass': 1} imp=0.8113
+[root]    Internal       gain = 0.1887
+        Good: 4/8 {'Fail': 1, 'Pass': 3} imp=0.8113
+        Poor: 4/8 {'Fail': 3, 'Pass': 1} imp=0.8113
+[root] CHOOSE attribute 'Attendance' (score 0.1887)
+[root/Attendance=High] parent counts {'Fail': 1, 'Pass': 3}  impurity(entropy) = 0.8113
+[root/Attendance=High]    Assignments    gain = 0.3113
+        Done: 2/4 {'Fail': 0, 'Pass': 2} imp=0.0000
+        Missed: 2/4 {'Fail': 1, 'Pass': 1} imp=1.0000
+[root/Attendance=High]    Internal       gain = 0.3113
+        Good: 2/4 {'Fail': 0, 'Pass': 2} imp=0.0000
+        Poor: 2/4 {'Fail': 1, 'Pass': 1} imp=1.0000
+[root/Attendance=High] CHOOSE attribute 'Assignments' (score 0.3113)
+[root/Attendance=High/Assignments=Done] pure node {'Pass': 2} -> leaf 'Pass'
+[root/Attendance=High/Assignments=Missed] parent counts {'Fail': 1, 'Pass': 1}  impurity(entropy) = 1.0000
+[root/Attendance=High/Assignments=Missed]    Internal       gain = 1.0000
+        Good: 1/2 {'Fail': 0, 'Pass': 1} imp=0.0000
+        Poor: 1/2 {'Fail': 1, 'Pass': 0} imp=0.0000
+[root/Attendance=High/Assignments=Missed] CHOOSE attribute 'Internal' (score 1.0000)
+[root/Attendance=High/Assignments=Missed/Internal=Good] pure node {'Pass': 1} -> leaf 'Pass'
+[root/Attendance=High/Assignments=Missed/Internal=Poor] pure node {'Fail': 1} -> leaf 'Fail'
+[root/Attendance=Low] parent counts {'Fail': 3, 'Pass': 1}  impurity(entropy) = 0.8113
+[root/Attendance=Low]    Assignments    gain = 0.3113
+        Done: 2/4 {'Fail': 1, 'Pass': 1} imp=1.0000
+        Missed: 2/4 {'Fail': 2, 'Pass': 0} imp=0.0000
+[root/Attendance=Low]    Internal       gain = 0.3113
+        Good: 2/4 {'Fail': 1, 'Pass': 1} imp=1.0000
+        Poor: 2/4 {'Fail': 2, 'Pass': 0} imp=0.0000
+[root/Attendance=Low] CHOOSE attribute 'Assignments' (score 0.3113)
+[root/Attendance=Low/Assignments=Done] parent counts {'Fail': 1, 'Pass': 1}  impurity(entropy) = 1.0000
+[root/Attendance=Low/Assignments=Done]    Internal       gain = 1.0000
+        Good: 1/2 {'Fail': 0, 'Pass': 1} imp=0.0000
+        Poor: 1/2 {'Fail': 1, 'Pass': 0} imp=0.0000
+[root/Attendance=Low/Assignments=Done] CHOOSE attribute 'Internal' (score 1.0000)
+[root/Attendance=Low/Assignments=Done/Internal=Good] pure node {'Pass': 1} -> leaf 'Pass'
+[root/Attendance=Low/Assignments=Done/Internal=Poor] pure node {'Fail': 1} -> leaf 'Fail'
+[root/Attendance=Low/Assignments=Missed] pure node {'Fail': 2} -> leaf 'Fail'
+
+Final tree:
+[Attendance = High]
+  [Assignments = Done]
+    -> Pass  {'Pass': 2}
+  [Assignments = Missed]
+    [Internal = Good]
+      -> Pass  {'Pass': 1}
+    [Internal = Poor]
+      -> Fail  {'Fail': 1}
+[Attendance = Low]
+  [Assignments = Done]
+    [Internal = Good]
+      -> Pass  {'Pass': 1}
+    [Internal = Poor]
+      -> Fail  {'Fail': 1}
+  [Assignments = Missed]
+    -> Fail  {'Fail': 2}
+depth = 3, leaves = 6, training accuracy = 1.000
+
+==============================================================================
+TASK 2.7  CHALLENGE: change ONE value  (row 6: Low, Done, Poor  Fail -> Pass)
+PREDICTION (made before tracing): Assignments=Done becomes pure (rows 1,2,5,6 all Pass),
+so Assignments should overtake Attendance as the root attribute.
+  Attendance Assignments Internal Result
+1       High        Done     Good   Pass
+2       High        Done     Poor   Pass
+3       High      Missed     Good   Pass
+4       High      Missed     Poor   Fail
+5        Low        Done     Good   Pass
+6        Low        Done     Poor   Pass
+7        Low      Missed     Good   Fail
+8        Low      Missed     Poor   Fail
+[root] parent counts {'Fail': 3, 'Pass': 5}  impurity(entropy) = 0.9544
+[root]    Attendance     gain = 0.0488
+[root]    Assignments    gain = 0.5488
+[root]    Internal       gain = 0.0488
+[root] CHOOSE attribute 'Assignments' (score 0.5488)
+ROOT ATTRIBUTE AFTER CHANGE = Assignments   (before change: Attendance)
+Prediction correct: True
+
+==============================================================================
+TASK 2.7  IDENTIFIER-LIKE ATTRIBUTE (unique StudentID) - bias of information gain
+
+Criterion = entropy     root = StudentID
+[root] parent counts {'Fail': 4, 'Pass': 4}  impurity(entropy) = 1.0000
+[root]    StudentID      gain = 1.0000
+[root]    Attendance     gain = 0.1887
+[root]    Assignments    gain = 0.1887
+[root]    Internal       gain = 0.1887
+[root] CHOOSE attribute 'StudentID' (score 1.0000)
+
+Criterion = gain_ratio  root = StudentID
+[root] parent counts {'Fail': 4, 'Pass': 4}  impurity(gain_ratio) = 1.0000
+[root]    StudentID      gain = 1.0000  split-info = 3.0000  gain-ratio = 0.3333
+[root]    Attendance     gain = 0.1887  split-info = 1.0000  gain-ratio = 0.1887
+[root]    Assignments    gain = 0.1887  split-info = 1.0000  gain-ratio = 0.1887
+[root]    Internal       gain = 0.1887  split-info = 1.0000  gain-ratio = 0.1887
+[root] CHOOSE attribute 'StudentID' (score 0.3333)
+
+Repair 1: forbid branches smaller than 2 examples (min_samples_leaf = 2), criterion = entropy
+  root = Attendance
+Repair 2: remove the identifier column (data hygiene) -> same as original tree, root = Attendance
+Note: on this 8-row table gain ratio is NOT enough (ID: 1.0/3.0 = 0.333 > 0.189), because the real
+attributes carry little gain. On larger data it works - see task2_experiments.py (section D).

@@ -1,0 +1,43 @@
+================================================================================
+TASK 5.1 (Design)  THREE-EXAMPLE TOY TABLE: WHY A ZERO COUNT BREAKS CLASSIFICATION
+================================================================================
+Ex  Load    Cooling  Class
+1   High    Fault    Hazard
+2   High    OK       Safe
+3   Normal  OK       Safe
+Query: Load = Normal, Cooling = Fault
+  alpha=0  P(Hazard)=0.3333  P(Normal|Hazard)=0.0000  P(Fault|Hazard)=1.0000  ->  score = 0.0000
+  alpha=0  P(Safe)=0.6667  P(Normal|Safe)=0.5000  P(Fault|Safe)=0.0000  ->  score = 0.0000
+  alpha=0  BOTH scores are 0: the posterior is 0/0 - classification is undefined.
+  alpha=1  P(Hazard)=0.3333  P(Normal|Hazard)=0.3333  P(Fault|Hazard)=0.6667  ->  score = 0.0741
+  alpha=1  P(Safe)=0.6667  P(Normal|Safe)=0.5000  P(Fault|Safe)=0.2500  ->  score = 0.0833
+  alpha=1  posterior: Hazard = 0.4706   Safe = 0.5294   -> predict Safe
+
+================================================================================
+TASK 5.1 (Implement)  REGIME A - plentiful data (all 1050 training rows, 10 bins)
+================================================================================
+train=1050  test=450  bins/feature=10  hazardous rate=0.547  features=['load_pct', 'voltage_dev', 'temp_c', 'thd_pct']
+alpha   zero-counts  Acc      Prec     Recall   F1       log-loss  undefined 
+0.0     0            0.8489   0.8678   0.8537   0.8607   0.3427    0         
+0.1     0            0.8489   0.8678   0.8537   0.8607   0.3426    0         
+1.0     0            0.8489   0.8678   0.8537   0.8607   0.3429    0         
+10.0    0            0.8533   0.8719   0.8577   0.8648   0.3634    0         
+Best alpha by held-out log-loss = 0.1 ; confusion matrix [[TN FP],[FN TP]] = [[172, 32], [36, 210]]
+
+================================================================================
+TASK 5.1 (Implement)  REGIME B - sparse data (120 training rows, 20 bins) : zero counts appear
+================================================================================
+train=120  test=450  bins/feature=20  hazardous rate=0.547  features=['load_pct', 'voltage_dev', 'temp_c', 'thd_pct']
+alpha   zero-counts  Acc      Prec     Recall   F1       log-loss  undefined 
+0.0     10           0.7756   0.7715   0.8374   0.8031   1.4869    15        
+0.1     10           0.7578   0.7645   0.8049   0.7842   0.5532    0         
+1.0     10           0.7533   0.7733   0.7764   0.7748   0.5090    0         
+10.0    10           0.7333   0.7203   0.8374   0.7744   0.5784    0         
+Best alpha by held-out log-loss = 1.0 ; confusion matrix [[TN FP],[FN TP]] = [[148, 56], [55, 191]]
+
+INTERPRETATION (read from the tables above)
+ * Regime A: zero-counts = 0 for every alpha, so smoothing changes almost nothing (log-loss 0.3427 at alpha=0 vs 0.3429 at alpha=1);
+   alpha = 10 only over-smooths (log-loss rises to 0.3634).
+ * Regime B: alpha = 0 meets 10 zero counts, 15 test rows become undefined (0/0) and log-loss is 1.4869;
+   alpha = 1 lowers log-loss to 0.5090 and removes every undefined row. Laplace smoothing matters exactly when counts are sparse.
+ * Accuracy is capped (~0.85) because hazard depends on load and voltage JOINTLY (elliptical safe region) - independence is violated.

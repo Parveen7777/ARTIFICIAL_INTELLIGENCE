@@ -1,0 +1,32 @@
+================================================================================================
+TASK 6 STAGE 5  TOY ENVIRONMENT  (alpha=0.5, gamma=0.9, Q initialised to 0)
+Transition / reward table  (state, action) -> (next state, reward):
+   (S0 Comfortable, Off ) -> (S1 Warm       , -1)
+   (S0 Comfortable, Cool) -> (S0 Comfortable, -2)
+   (S1 Warm       , Off ) -> (S2 Hot        , -4)
+   (S1 Warm       , Cool) -> (S0 Comfortable, -2)
+   (S2 Hot        , Off ) -> (S2 Hot        , -4)
+   (S2 Hot        , Cool) -> (S1 Warm       , -3)
+================================================================================================
+#   state           act   reward next state      TD target = r + gamma*max Q(s',.)  old Q     new Q    
+1   S2 Hot          Cool  -3     S1 Warm         -3 + 0.9*0.0000 = -3.0000          0.0000    -1.5000  
+      Q(S2,Cool) <- 0.0000 + 0.5*(-3.0000 - 0.0000) = -1.5000
+2   S1 Warm         Cool  -2     S0 Comfortable  -2 + 0.9*0.0000 = -2.0000          0.0000    -1.0000  
+      Q(S1,Cool) <- 0.0000 + 0.5*(-2.0000 - 0.0000) = -1.0000
+3   S0 Comfortable  Off   -1     S1 Warm         -1 + 0.9*0.0000 = -1.0000          0.0000    -0.5000  
+      Q(S0,Off) <- 0.0000 + 0.5*(-1.0000 - 0.0000) = -0.5000
+4   S1 Warm         Off   -4     S2 Hot          -4 + 0.9*0.0000 = -4.0000          0.0000    -2.0000  
+      Q(S1,Off) <- 0.0000 + 0.5*(-4.0000 - 0.0000) = -2.0000
+5   S2 Hot          Cool  -3     S1 Warm         -3 + 0.9*-1.0000 = -3.9000         -1.5000   -2.7000  
+      Q(S2,Cool) <- -1.5000 + 0.5*(-3.9000 - -1.5000) = -2.7000
+6   S1 Warm         Cool  -2     S0 Comfortable  -2 + 0.9*0.0000 = -2.0000          -1.0000   -1.5000  
+      Q(S1,Cool) <- -1.0000 + 0.5*(-2.0000 - -1.0000) = -1.5000
+
+Final Q-table after 6 updates (rows = states, columns = Off, Cool):
+   S0 Comfortable  Off =  -0.5000   Cool =   0.0000   greedy action = Cool
+   S1 Warm         Off =  -2.0000   Cool =  -1.5000   greedy action = Cool
+   S2 Hot          Off =   0.0000   Cool =  -2.7000   greedy action = Off
+
+Observation: (1) Q(S2,Off) = 0 has never been tried, so the greedy action in S2 is 'Off' only because of OPTIMISTIC
+initialisation (all true values are negative) - this is what drives early exploration. (2) After 6 updates the values are still far
+from converged; repeated sweeps (the training loop) are needed to push Q(S2,Off) down to its true, very negative value.

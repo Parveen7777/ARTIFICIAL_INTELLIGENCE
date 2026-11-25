@@ -1,0 +1,27 @@
+====================================================================================
+TASK 5.2  SMART-GRID, 2 FEATURES (load_pct, voltage_dev); train=1050 test=450 (same split for all four models)
+Hazardous rate = 0.547.  Safe region is an ellipse -> classes are NOT linearly separable.
+====================================================================================
+
+Linear SVM  5-fold CV grid over C: best = {'C': 0.01}, CV accuracy = 0.5467
+RBF SVM     5-fold CV grid over C x gamma (16 settings): best = {'C': 10, 'gamma': 1}, CV accuracy = 0.9381
+
+RBF CV accuracy table (rows = C, columns = gamma):
+param_gamma   0.01    0.10    1.00    10.00
+param_C                                    
+0.1          0.5467  0.8962  0.8857  0.9200
+1.0          0.5467  0.9257  0.9343  0.9371
+10.0         0.9181  0.9362  0.9381  0.9371
+100.0        0.9333  0.9381  0.9333  0.9143
+
+HELD-OUT TEST RESULTS (identical split)
+Model                        Acc      Precision Recall   F1       Train time   Size      
+Linear SVM                   0.5467   0.5467    1.0000   0.7069   0.0198 s     SV=954    
+RBF SVM                      0.9600   0.9634    0.9634   0.9634   0.0132 s     SV=253    
+Naive Bayes (scratch, a=1)   0.8933   0.9195    0.8821   0.9004   0.0003 s     -         
+Decision tree (Task 2)       0.9267   0.9312    0.9350   0.9331   0.2180 s     leaves=68 
+
+Support vectors: linear = 954 of 1050 training points (90.9%), RBF = 253 (24.1%)
+Majority-class baseline accuracy = 0.5467
+
+Saved figure: outputs/figures/task5_decision_boundaries.png

@@ -1,0 +1,59 @@
+==============================================================================
+TASK 3.2  FAILING INPUT  X = [1.  1.2 4.8 5. ]  K = 2   pi0 = (0.5, 0.5)  mu0 = (1, 5)  var0 = (1, 1)
+==============================================================================
+
+--- FAULTY version, iteration 1 ---
+responsibilities r[i][k] (columns = component 1, 2):
+   x1=1.0  r = [0.199471, 0.000067]   row-sum = 0.199538   <-- should be 1
+   x2=1.2  r = [0.195521, 0.000146]   row-sum = 0.195667   <-- should be 1
+   x3=4.8  r = [0.000146, 0.195521]   row-sum = 0.195667   <-- should be 1
+   x4=5.0  r = [0.000067, 0.199471]   row-sum = 0.199538   <-- should be 1
+   N_k = [0.3952 0.3952]   (SUM of N_k should equal n = 4, here 0.7904)
+   mu_new = [1.101 4.899]   var_new = [0.0176 0.0176]
+   pi_new = [0.0988 0.0988]   SUM pi = 0.197603   <-- should be 1
+
+--- REPAIRED version, iteration 1 ---
+responsibilities r[i][k] (columns = component 1, 2):
+   x1=1.0  r = [0.999665, 0.000335]   row-sum = 1.000000 
+   x2=1.2  r = [0.999254, 0.000746]   row-sum = 1.000000 
+   x3=4.8  r = [0.000746, 0.999254]   row-sum = 1.000000 
+   x4=5.0  r = [0.000335, 0.999665]   row-sum = 1.000000 
+   N_k = [2. 2.]   (SUM of N_k should equal n = 4, here 4.0000)
+   mu_new = [1.102 4.898]   var_new = [0.0176 0.0176]
+   pi_new = [0.5 0.5]   SUM pi = 1.000000 
+
+==============================================================================
+TASK 3.4  DATA: 250 points from 0.6*N(-2,0.8^2)+0.4*N(3,1.2^2)   K=2  T=60  20 random initialisations
+==============================================================================
+
+FAULTY   version:
+  runs whose log-likelihood never decreased : 0 / 20
+  largest single-iteration drop in log-lik  : -11732.0350
+  final log-likelihood  mean=-166777.28  min=-167971.81  max=-157790.62
+  final SUM of mixing weights  mean=6.396e-15  min=2.590e-23  max=3.731e-14
+  recovered means (sorted) mean = [-2.2257 -1.212 ]   (true = [-2, 3])
+  recovered means std over inits = [0.0005 2.027 ]
+
+REPAIRED version:
+  runs whose log-likelihood never decreased : 20 / 20
+  largest single-iteration drop in log-lik  : -0.0000
+  final log-likelihood  mean=-496.59  min=-496.59  max=-496.59
+  final SUM of mixing weights  mean=1.000e+00  min=1.000e+00  max=1.000e+00
+  recovered means (sorted) mean = [-2.0435  2.9797]   (true = [-2, 3])
+  recovered means std over inits = [0. 0.]
+
+REPAIRED seed-0 final parameters: pi=[0.4016 0.5984] mu=[ 2.9797 -2.0435] var=[1.3377 0.6001]
+FAULTY   seed-0 final parameters: pi=[0. 0.] mu=[-2.2256 -2.2255] var=[0. 0.]
+
+==============================================================================
+TASK 3.5  REGRESSION CHECK - an input on which the original already behaved correctly
+==============================================================================
+Well-separated, balanced, tight clusters near -3 and +3; initial means placed on the clusters.
+  faulty   : mu=[-3.  3.]  hard assignments=[0 0 0 0 0 1 1 1 1 1]
+  repaired : mu=[-3.  3.]  hard assignments=[0 0 0 0 0 1 1 1 1 1]  pi=[0.5 0.5]
+  hard assignments identical      : True
+  max |mu_faulty - mu_repaired|   : 8.88e-16
+  repaired log-likelihood non-decreasing: True
+  sum(pi): faulty=2.803e+08   repaired=1.000000
+  -> The original recovers the right cluster means and labels here, so it 'looks fine'; but only the
+     repaired version also returns weights that sum to 1 (0.5 / 0.5).

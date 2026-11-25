@@ -1,0 +1,69 @@
+====================================================================================
+TASK 5.3 (Design)  DOMAIN THEORY (8 first-order rules)
+====================================================================================
+  R1: Overheating(?s) <- HighLoad(?s) ^ CoolingFailed(?s)
+  R2: Overheating(?s) <- HighTemp(?s) ^ LowOilLevel(?s)
+  R3: InsulationRisk(?s) <- Overheating(?s) ^ InsulationAged(?s)
+  R4: InsulationRisk(?s) <- InsulationWet(?s) ^ HarmonicsHigh(?s)
+  R5: ProtectionWeak(?s) <- BreakerOld(?s) ^ RelayUntested(?s)
+  R6: Hazardous(?s) <- InsulationRisk(?s) ^ ProtectionWeak(?s)
+  R7: Critical(?s) <- Feeds(?s, ?h) ^ Hospital(?h)
+  R8: Hazardous(?s) <- Overheating(?s) ^ Critical(?s)
+Operational predicates (directly observable): ['BreakerOld', 'CoolingFailed', 'Feeds', 'HarmonicsHigh', 'HighLoad', 'HighTemp', 'Hospital', 'InsulationAged', 'InsulationWet', 'LowOilLevel', 'NearRiver', 'RelayUntested']
+
+====================================================================================
+TRAINING EXAMPLE: substation S1
+====================================================================================
+Facts: HighLoad(S1), CoolingFailed(S1), InsulationAged(S1), BreakerOld(S1), RelayUntested(S1), NearRiver(S1), Feeds(S1, School1)
+
+EXPLANATION TREE for Hazardous(S1) (9 nodes):
+R6  =>  Hazardous(S1)
+  R3  =>  InsulationRisk(S1)
+    R1  =>  Overheating(S1)
+      FACT  HighLoad(S1)
+      FACT  CoolingFailed(S1)
+    FACT  InsulationAged(S1)
+  R5  =>  ProtectionWeak(S1)
+    FACT  BreakerOld(S1)
+    FACT  RelayUntested(S1)
+
+GENERALISED (operational) RULE learned by EBG:
+  LEARNED: Hazardous(?x1) <- HighLoad(?x1) ^ CoolingFailed(?x1) ^ InsulationAged(?x1) ^ BreakerOld(?x1) ^ RelayUntested(?x1)
+  -> constants S1 replaced by a variable; irrelevant facts (NearRiver, Feeds School1) dropped; every condition is operational.
+
+====================================================================================
+TASK 5.3 (Implement)  TEST ON 20 DESIGNED CASES
+====================================================================================
+case                       truth   | learned   steps    | theory    steps    | hybrid steps
+c01 exact five premises    True    | True      6        | True      9        | 6           
+c02 + irrelevant facts     True    | True      6        | True      9        | 6           
+c03 + feeds hospital       True    | True      6        | True      9        | 6           
+c04 + wet insulation       True    | True      6        | True      9        | 6           
+c05 + low oil              True    | True      6        | True      9        | 6           
+c06 hot+low oil path       True    | False     1        | True      10       | 11          
+c07 wet+harmonics path     True    | False     1        | True      10       | 11          
+c08 overheating+hospital   True    | False     3        | True      14       | 17          
+c09 hot/oil+hospital       True    | False     1        | True      15       | 16          
+c10 wet+harmonics+river    True    | False     1        | True      10       | 11          
+c11 relay tested           False   | False     5        | False     16       | 21          
+c12 breaker new            False   | False     4        | False     15       | 19          
+c13 cooling ok             False   | False     2        | False     10       | 12          
+c14 load normal            False   | False     1        | False     8        | 9           
+c15 insulation young       False   | False     3        | False     13       | 16          
+c16 only high temp         False   | False     1        | False     10       | 11          
+c17 feeds school only      False   | False     3        | False     14       | 17          
+c18 wet, no harmonics      False   | False     1        | False     9        | 10          
+c19 healthy substation     False   | False     1        | False     8        | 9           
+c20 wet+harmonics only     False   | False     1        | False     11       | 12          
+
+Learned rule ALONE : true positives = 5, false positives = 0, false negatives = 5  -> precision = 1.00, recall = 0.50
+  (sound, never wrong when it fires; but incomplete: it only encodes ONE of the several proofs)
+Inference steps on the 5 hazardous cases the learned rule covers:  theory = 45   learned rule = 30   saving = 33.3%
+Total steps over all 20 cases:  theory only = 218   hybrid (learned rule tried first, theory as fall-back) = 232
+  -> average steps/case: theory 10.9 vs hybrid 11.6 (hybrid COSTLIER: the extra rule is tried and fails on uncovered cases - the 'utility problem')
+
+WHAT WAS LEARNED THAT THE DOMAIN THEORY DID NOT ALREADY ENTAIL?
+  Nothing new in terms of truth: DOMAIN_THEORY |= LEARNED rule (every hazardous verdict above agrees with the theory, no false positives).
+  What EBL adds is OPERATIONALITY and EFFICIENCY: a single-step shortcut over five observable facts that skips the intermediate
+  concepts Overheating / InsulationRisk / ProtectionWeak, plus the knowledge of WHICH facts of the example mattered (NearRiver and
+  Feeds(S1,School1) were irrelevant to the explanation and were dropped). It does not extend what the system can conclude.

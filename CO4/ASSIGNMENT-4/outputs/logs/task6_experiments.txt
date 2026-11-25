@@ -1,0 +1,62 @@
+====================================================================================================
+TASK 6 STAGE 6  SETTINGS: 4000 training episodes/seed, 20 seeds, 200 fixed evaluation days, alpha=0.1, gamma=0.95, eps 1.0->0.05 over 60% of training
+State space = 1200 discrete states x 3 actions; comfort band (22.0, 26.0) C (enforced when occupied); price tiers from Rs/kWh by hour.
+====================================================================================================
+
+A. NOMINAL ENVIRONMENT - held-out evaluation days (mean +/- std over 20 seeds; baseline is deterministic)
+Policy                             reward/day         energy kWh/day     cost Rs/day        comfort viol. steps pre-cool steps
+Fixed-rule thermostat              -388.96            21.43              191.11             13.65              0.00          
+Q-learning (gamma=0.95)            -250.03 +/- 13.45  24.69 +/- 0.48     206.57 +/- 3.37    5.70 +/- 0.84      2.75 +/- 0.20 
+SARSA (gamma=0.95)                 -254.22 +/- 14.29  25.72 +/- 0.53     213.40 +/- 4.41    4.85 +/- 0.74      2.70 +/- 0.31 
+
+Q-learning beats the thermostat in reward on 20 / 20 seeds (baseline reward -388.96; worst seed -288.03, best seed -237.13)
+Q-learning has fewer comfort violations than the thermostat on 20 / 20 seeds
+SARSA beats the thermostat in reward on 20 / 20 seeds
+Episodes to convergence (moving-average return within 5% of its final level): Q-learning 2266.05 +/- 177.48,  SARSA 2399.60 +/- 180.60
+Reduction vs thermostat:  comfort violations 58.3%   reward improvement 35.7%   energy change +15.2%
+Note: the agent may use MORE kWh than the thermostat - it spends energy at cheap off-peak prices (pre-cooling) to avoid discomfort
+      and expensive peak-hour cooling; the objective is cost + comfort, not kWh alone.
+
+LEARNED POLICY (seed 0) at 08:00-08:45, room EMPTY, first class at 09:00 (expected pre-cooling), by indoor-temperature bin / outdoor bin:
+   outdoor <33C       indoor <22:High   22-24:Low    24-26:High   26-28:Low    >28:High  
+   outdoor >=33C      indoor <22:(unvisited) 22-24:(unvisited) 24-26:(unvisited) 26-28:High   >28:High  
+
+====================================================================================================
+C. ADVERSARIAL TEST 1 - DEMAND-RESPONSE PRICE SPIKE DURING PEAK OCCUPANCY (Rs 45/kWh from 11:00 to 13:00) WITH THE ORIGINAL WEAK COMFORT WEIGHT
+====================================================================================================
+PREDICTION (written before running): with lambda = 8 Rs per degC per occupant-level, two hours of High cooling at Rs 45/kWh
+costs Rs 45 per step, which equals the penalty of only ~2.8 degC of violation at full occupancy. A reward-maximising agent will therefore
+SWITCH OFF during the spike. Locally the reward improves (cheap steps), globally comfort collapses: comfort-violation steps of the spike-trained
+agent should be at least TWICE those of the nominal agent, even though its energy cost is lower. The failing assumption is the reward weight
+(comfort is priced, not protected), not the learning algorithm.
+
+Evaluation in the spike world (same 200 days; reward column uses the ORIGINAL lambda = 8 so rows are comparable)
+Policy                             reward/day         energy kWh/day     cost Rs/day        comfort viol. steps pre-cool steps
+Thermostat                         -580.29            21.43              382.44             13.65              0.00          
+Nominal-trained agent (never saw spike) -417.80 +/- 14.07  23.88 +/- 0.28     365.51 +/- 4.99    8.06 +/- 0.77      2.75 +/- 0.20 
+Spike-trained agent, lambda = 8 (FAILS) -451.74 +/- 29.81  24.21 +/- 0.60     341.03 +/- 20.98   10.54 +/- 1.55     2.59 +/- 0.41 
+Spike-trained agent, lambda = 60 (repair) -435.92 +/- 12.07  26.00 +/- 0.35     403.17 +/- 9.07    2.91 +/- 0.47      2.75 +/- 0.20 
+
+RESULT: spike-trained agent violations/day = 10.54 vs nominal agent (nominal world) = 5.70  -> ratio 1.85x  (prediction NOT CONFIRMED)
+        its cost Rs/day = 341.0 (thermostat 382.4); violations of the repaired lambda=60 agent = 2.91
+DIAGNOSIS: the learner did exactly what the reward asked. The comfort term is a soft price that a spike can outbid; repair = raise lambda
+(or add a hard constraint / safety layer that overrides 'Off' when an occupied room leaves the band).
+
+====================================================================================================
+D. ADVERSARIAL TEST 2 - MYOPIC AGENT (gamma = 0): 'switch off before the occupants arrive'
+====================================================================================================
+PREDICTION (written before running): with gamma = 0 the empty-room steps at 08:00-08:45 have no immediate comfort penalty, only an energy cost,
+so the agent will choose Off there (pre-cool steps ~ 0) and occupants will walk into a hot room: violations should be clearly higher than for
+gamma = 0.95. Missing assumption: the discount factor must be large enough for the agent to see the delayed discomfort caused by a warm start.
+
+Nominal world, evaluation on 200 held-out days (mean +/- std over 20 seeds)
+Policy                             reward/day         energy kWh/day     cost Rs/day        comfort viol. steps pre-cool steps
+Q-learning gamma = 0.00            -415.20 +/- 25.99  20.92 +/- 0.28     184.99 +/- 3.08    16.35 +/- 0.79     0.00 +/- 0.00 
+Q-learning gamma = 0.50            -275.48 +/- 28.39  22.57 +/- 0.35     194.64 +/- 2.56    9.30 +/- 1.19      2.05 +/- 0.48 
+Q-learning gamma = 0.95            -250.03 +/- 13.45  24.69 +/- 0.48     206.57 +/- 3.37    5.70 +/- 0.84      2.75 +/- 0.20 
+
+RESULT: pre-cool steps/day gamma=0: 0.00 vs gamma=0.95: 2.75 ; violations gamma=0: 16.35 vs gamma=0.95: 5.70 -> prediction CONFIRMED
+DIAGNOSIS: failing assumption = horizon. The Markov state is fine; the TD target ignores the future (gamma = 0), so the value of cooling an
+empty room (an investment whose pay-off arrives 15-60 minutes later) is never learned.
+
+Saved figures: task6_learning_curves.png, task6_sample_day.png, task6_attacks.png

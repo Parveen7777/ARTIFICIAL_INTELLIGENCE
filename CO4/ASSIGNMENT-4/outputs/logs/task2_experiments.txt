@@ -1,0 +1,50 @@
+DATASET: Breast Cancer Wisconsin (Diagnostic)  n=569  features=30  classes={'benign': 357, 'malignant': 212}
+Split: train=398  test=171  (stratified, seed=42)
+
+==============================================================================
+[A/B] FROM-SCRATCH LEARNER vs scikit-learn  (full-depth trees, same split)
+==============================================================================
+criterion=entropy   prediction agreement with sklearn on test set = 0.9766   (depth scratch=8, sklearn=8; leaves 16 vs 16)
+  ROOT split  scratch: worst perimeter <= 112.80000   sklearn: worst perimeter <= 112.80000   -> IDENTICAL
+  confusion matrix  scratch  [[TP FN],[FP TN]] = [[57, 7], [1, 106]]    sklearn = [[56, 8], [2, 105]]
+criterion=gini      prediction agreement with sklearn on test set = 0.9766   (depth scratch=8, sklearn=8; leaves 19 vs 19)
+  ROOT split  scratch: worst perimeter <= 112.80000   sklearn: worst perimeter <= 112.80000   -> IDENTICAL
+  confusion matrix  scratch  [[TP FN],[FP TN]] = [[53, 11], [6, 101]]    sklearn = [[54, 10], [7, 100]]
+(Residual disagreement comes from equally-good splits: sklearn breaks exact ties with a random feature order, the scratch tree uses first-attribute-wins.)
+
+Model              Acc      Precision  Recall   F1         (positive class = malignant)
+scratch-entropy    0.9532   0.9828     0.8906   0.9344  
+sklearn-entropy    0.9415   0.9655     0.8750   0.9180  
+scratch-gini       0.9006   0.8983     0.8281   0.8618  
+sklearn-gini       0.9006   0.8852     0.8438   0.8640  
+
+==============================================================================
+[C] OVERFITTING AND PRUNING (60 / 20 / 20 train / validation / test)
+==============================================================================
+train=341 validation=114 test=114
+Setting                  Depth  Leaves  Train    Valid    Test     Gap(tr-te)
+full tree (no limit)     5      14      1.0000   0.9386   0.9386   +0.0614
+max_depth=1              1      2       0.9296   0.9298   0.8772   +0.0524
+max_depth=2              2      4       0.9384   0.9035   0.9386   -0.0002
+max_depth=3              3      7       0.9765   0.9474   0.9474   +0.0292
+max_depth=4              4      11      0.9912   0.9386   0.9386   +0.0526
+max_depth=5              5      14      1.0000   0.9386   0.9386   +0.0614
+max_depth=6              5      14      1.0000   0.9386   0.9386   +0.0614
+max_depth=8              5      14      1.0000   0.9386   0.9386   +0.0614
+min_samples_leaf=5       4      11      0.9795   0.9386   0.9561   +0.0233
+min_samples_leaf=10      4      8       0.9707   0.9474   0.9298   +0.0408
+min_samples_leaf=20      4      6       0.9384   0.9035   0.9386   -0.0002
+reduced-error pruning    3      6       0.9765   0.9474   0.9474   +0.0292
+
+Best validation accuracy: 'reduced-error pruning' (val 0.9474) -> test 0.9474   [test set looked at only for this final report]
+
+==============================================================================
+[D] IDENTIFIER-LIKE ATTRIBUTE ON REAL DATA (StudentID-style unique string per row)
+==============================================================================
+Learner                            Root           Depth    Leaves   Test acc
+entropy (information gain)         RecordID       1        398      0.6257  
+gain ratio (C4.5 repair)           worst perimeter 17       29       0.9123  
+entropy + min_samples_leaf=5       worst perimeter 6        12       0.9298  
+Majority-class baseline accuracy on the same test set = 0.6257
+-> With plain information gain the unique ID wins the root (gain = H(Y)); the tree memorises the
+   training set and, because test IDs are unseen, falls back to the root majority: no better than the baseline.

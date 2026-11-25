@@ -1,0 +1,29 @@
+==========================================================================
+DATASET: synthetic student at-risk data  n=1000  features=8  at-risk rate=0.185
+==========================================================================
+
+[A] DEFECTIVE protocol  (Read Data -> Train on Data -> Test on Data -> PRINT accuracy)
+Model                      Train-on-all 5-fold CV    Held-out     Optimism  
+Decision tree (unpruned)   1.0000       0.8173       0.8040       +0.1960
+1-Nearest-Neighbour        1.0000       0.8467       0.8360       +0.1640
+
+[B] Majority-class baseline and imbalance (held-out test set, n=250)
+Model                      Acc      Prec     Recall   F1      
+Majority baseline          0.8160   0.0000   0.0000   0.0000  
+Unpruned tree              0.8040   0.4651   0.4348   0.4494  
+  -> The baseline that flags NOBODY as at-risk already scores 81.6 % accuracy but recall = 0.
+
+[C] Optimism gap over 10 different random splits (unpruned tree)
+  train acc  = 1.0000 +/- 0.0000
+  held-out   = 0.8012 +/- 0.0223
+  optimism   = 0.1988 +/- 0.0223   (train minus held-out)
+
+[D] Uncontrolled randomness: same code, no seed, 5 runs (held-out accuracy)
+  accuracies: [0.792 0.808 0.784 0.836 0.8  ]  spread = 0.0520
+
+[E] REPAIRED protocol: split -> 5-fold CV model selection -> test set used ONCE
+  best hyper-parameters (CV F1 = 0.5289): {'max_depth': 5, 'min_samples_leaf': 5}
+  TEST  acc=0.8560 prec=0.7778 recall=0.3043 F1=0.4375
+  confusion matrix [[TN FP],[FN TP]] = [[200, 4], [32, 14]]
+  baseline F1 = 0.0000  ->  model beats baseline by 0.4375 F1
+  train acc of repaired tree = 0.8893 (now close to held-out 0.8560)
