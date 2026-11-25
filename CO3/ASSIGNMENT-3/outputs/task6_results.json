@@ -1,0 +1,248 @@
+{
+ "fc": [
+  {
+   "F": 100,
+   "mode": "naive",
+   "inferred": 312,
+   "firings": 1649,
+   "redundant": 1337,
+   "iterations": 6,
+   "time": 0.01569339399998171,
+   "irrelevant_pct": 99.35897435897436,
+   "relevant": 2
+  },
+  {
+   "F": 100,
+   "mode": "semi-naive",
+   "inferred": 312,
+   "firings": 312,
+   "redundant": 0,
+   "iterations": 6,
+   "time": 0.009236216999966018,
+   "irrelevant_pct": 99.35897435897436,
+   "relevant": 2
+  },
+  {
+   "F": 1000,
+   "mode": "naive",
+   "inferred": 3926,
+   "firings": 26071,
+   "redundant": 22145,
+   "iterations": 8,
+   "time": 0.24662787599999092,
+   "irrelevant_pct": 99.9490575649516,
+   "relevant": 2
+  },
+  {
+   "F": 1000,
+   "mode": "semi-naive",
+   "inferred": 3926,
+   "firings": 3926,
+   "redundant": 0,
+   "iterations": 8,
+   "time": 0.14281730699997297,
+   "irrelevant_pct": 99.9490575649516,
+   "relevant": 2
+  },
+  {
+   "F": 10000,
+   "mode": "naive",
+   "inferred": 47415,
+   "firings": 372151,
+   "redundant": 324736,
+   "iterations": 10,
+   "time": 3.8149366600000008,
+   "irrelevant_pct": 99.99578192555099,
+   "relevant": 2
+  },
+  {
+   "F": 10000,
+   "mode": "semi-naive",
+   "inferred": 47415,
+   "firings": 47415,
+   "redundant": 0,
+   "iterations": 10,
+   "time": 2.4012844810000047,
+   "irrelevant_pct": 99.99578192555099,
+   "relevant": 2
+  }
+ ],
+ "bc": [
+  {
+   "F": 100,
+   "goals": 22,
+   "unifs": 22,
+   "depth": 6,
+   "rep": 8,
+   "answers": 1,
+   "time": 0.0003538830000024973,
+   "fc_firings": 1649
+  },
+  {
+   "F": 1000,
+   "goals": 22,
+   "unifs": 22,
+   "depth": 6,
+   "rep": 8,
+   "answers": 1,
+   "time": 0.0002795919999698526,
+   "fc_firings": 26071
+  },
+  {
+   "F": 10000,
+   "goals": 22,
+   "unifs": 22,
+   "depth": 6,
+   "rep": 8,
+   "answers": 1,
+   "time": 0.00026184400002193797,
+   "fc_firings": 372151
+  }
+ ],
+ "lr": [
+  {
+   "F": 100,
+   "strategy": "naive",
+   "outcome": "NON-TERMINATING (cap)",
+   "answers": 0,
+   "truth": 3,
+   "goals": 20001,
+   "unifs": 20003,
+   "depth": 4002,
+   "repeated": 19996,
+   "time": 1.7185687319999943
+  },
+  {
+   "F": 100,
+   "strategy": "loop check",
+   "outcome": "terminated",
+   "answers": 1,
+   "truth": 3,
+   "goals": 2,
+   "unifs": 3,
+   "depth": 1,
+   "repeated": 0,
+   "time": 8.920999999872947e-05
+  },
+  {
+   "F": 100,
+   "strategy": "depth bound (d=12)",
+   "outcome": "terminated",
+   "answers": 3,
+   "truth": 3,
+   "goals": 55,
+   "unifs": 59,
+   "depth": 12,
+   "repeated": 50,
+   "time": 0.0005972590000169475
+  },
+  {
+   "F": 100,
+   "strategy": "tabling",
+   "outcome": "terminated",
+   "answers": 3,
+   "truth": 3,
+   "goals": 10,
+   "unifs": 26,
+   "depth": 0,
+   "repeated": 5,
+   "time": 0.00019648900001811853
+  },
+  {
+   "F": 1000,
+   "strategy": "naive",
+   "outcome": "NON-TERMINATING (cap)",
+   "answers": 0,
+   "truth": 5,
+   "goals": 20001,
+   "unifs": 20005,
+   "depth": 2860,
+   "repeated": 19994,
+   "time": 1.0696646110000074
+  },
+  {
+   "F": 1000,
+   "strategy": "loop check",
+   "outcome": "terminated",
+   "answers": 1,
+   "truth": 5,
+   "goals": 2,
+   "unifs": 3,
+   "depth": 1,
+   "repeated": 0,
+   "time": 0.00010090500001069813
+  },
+  {
+   "F": 1000,
+   "strategy": "depth bound (d=12)",
+   "outcome": "terminated",
+   "answers": 5,
+   "truth": 5,
+   "goals": 70,
+   "unifs": 76,
+   "depth": 12,
+   "repeated": 63,
+   "time": 0.0007520559999534271
+  },
+  {
+   "F": 1000,
+   "strategy": "tabling",
+   "outcome": "terminated",
+   "answers": 5,
+   "truth": 5,
+   "goals": 16,
+   "unifs": 54,
+   "depth": 0,
+   "repeated": 9,
+   "time": 0.0004017919999910191
+  },
+  {
+   "F": 10000,
+   "strategy": "naive",
+   "outcome": "NON-TERMINATING (cap)",
+   "answers": 0,
+   "truth": 7,
+   "goals": 20001,
+   "unifs": 20007,
+   "depth": 2226,
+   "repeated": 19992,
+   "time": 0.7212094800000273
+  },
+  {
+   "F": 10000,
+   "strategy": "loop check",
+   "outcome": "terminated",
+   "answers": 1,
+   "truth": 7,
+   "goals": 2,
+   "unifs": 3,
+   "depth": 1,
+   "repeated": 0,
+   "time": 9.109600000556384e-05
+  },
+  {
+   "F": 10000,
+   "strategy": "depth bound (d=12)",
+   "outcome": "terminated",
+   "answers": 7,
+   "truth": 7,
+   "goals": 81,
+   "unifs": 89,
+   "depth": 12,
+   "repeated": 72,
+   "time": 0.0007938669999703052
+  },
+  {
+   "F": 10000,
+   "strategy": "tabling",
+   "outcome": "terminated",
+   "answers": 7,
+   "truth": 7,
+   "goals": 22,
+   "unifs": 90,
+   "depth": 0,
+   "repeated": 13,
+   "time": 0.0004589739999687481
+  }
+ ]
+}

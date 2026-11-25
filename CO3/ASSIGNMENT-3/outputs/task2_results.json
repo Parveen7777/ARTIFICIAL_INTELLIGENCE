@@ -1,0 +1,244 @@
+{
+ "policy": [
+  {
+   "query": "Q1 (entailed)",
+   "tt": true,
+   "tt_models": 16384,
+   "res": true,
+   "gen": 21,
+   "att": 69,
+   "neg_res": false
+  },
+  {
+   "query": "Q2 (negation entailed)",
+   "tt": false,
+   "tt_models": 514,
+   "res": false,
+   "gen": 3,
+   "att": 53,
+   "neg_res": true
+  },
+  {
+   "query": "Q3 (not entailed)",
+   "tt": false,
+   "tt_models": 2586,
+   "res": false,
+   "gen": 13,
+   "att": 92,
+   "neg_res": false
+  }
+ ],
+ "chain": [
+  {
+   "n": 10,
+   "unit-pref + subsumption": {
+    "gen": 12,
+    "att": 12,
+    "sub": 10,
+    "time": 0.00021376199993028422
+   },
+   "FIFO, no subsumption": {
+    "gen": 66,
+    "att": 198,
+    "sub": 0,
+    "time": 0.0006139179999991029
+   },
+   "not_entailed": {
+    "result": false,
+    "gen": 10
+   },
+   "mc": {
+    "models": 2048,
+    "time": 0.0004222229999868432,
+    "result": true
+   }
+  },
+  {
+   "n": 20,
+   "unit-pref + subsumption": {
+    "gen": 22,
+    "att": 22,
+    "sub": 20,
+    "time": 0.00035665299992615473
+   },
+   "FIFO, no subsumption": {
+    "gen": 231,
+    "att": 1231,
+    "sub": 0,
+    "time": 0.0031877369999619987
+   },
+   "not_entailed": {
+    "result": false,
+    "gen": 20
+   },
+   "mc": {
+    "models": 2097152,
+    "time": 0.3954833619999363,
+    "result": true
+   }
+  },
+  {
+   "n": 40,
+   "unit-pref + subsumption": {
+    "gen": 42,
+    "att": 42,
+    "sub": 40,
+    "time": 0.000535812999942209
+   },
+   "FIFO, no subsumption": {
+    "gen": 861,
+    "att": 8682,
+    "sub": 0,
+    "time": 0.013309368000022914
+   },
+   "not_entailed": {
+    "result": false,
+    "gen": 40
+   },
+   "mc": {
+    "models": 2199023255552,
+    "time": null,
+    "result": null
+   }
+  },
+  {
+   "n": 80,
+   "unit-pref + subsumption": {
+    "gen": 82,
+    "att": 82,
+    "sub": 80,
+    "time": 0.0008052199999610821
+   },
+   "FIFO, no subsumption": {
+    "gen": 3321,
+    "att": 63905,
+    "sub": 0,
+    "time": 0.09098605600001974
+   },
+   "not_entailed": {
+    "result": false,
+    "gen": 80
+   },
+   "mc": {
+    "models": 2417851639229258349412352,
+    "time": null,
+    "result": null
+   }
+  }
+ ],
+ "irrelevant": [
+  {
+   "z": 0,
+   "models": 64,
+   "tt_time": 1.609200000984856e-05,
+   "res_gen": 6,
+   "res_time": 0.00010908100000506238
+  },
+  {
+   "z": 5,
+   "models": 2048,
+   "tt_time": 0.0002971200000274621,
+   "res_gen": 6,
+   "res_time": 8.06360000069617e-05
+  },
+  {
+   "z": 10,
+   "models": 65536,
+   "tt_time": 0.009519943999976022,
+   "res_gen": 6,
+   "res_time": 0.00011049800002638221
+  },
+  {
+   "z": 15,
+   "models": 2097152,
+   "tt_time": 0.40182506799999373,
+   "res_gen": 6,
+   "res_time": 0.0001578699999527089
+  },
+  {
+   "z": 18,
+   "models": 16777216,
+   "tt_time": 3.5506581820000065,
+   "res_gen": 6,
+   "res_time": 0.00019784899996011518
+  },
+  {
+   "z": 22,
+   "models": 268435456,
+   "tt_time": null,
+   "res_gen": 6,
+   "res_time": 0.00013828999999532243
+  }
+ ],
+ "php": [
+  {
+   "p": 2,
+   "m": 6,
+   "tt_models": 64,
+   "tt_time": 1.6633999962323287e-05,
+   "res_gen": 11,
+   "res_time": 0.00017698099998142425,
+   "capped": false,
+   "winner": "TT"
+  },
+  {
+   "p": 3,
+   "m": 12,
+   "tt_models": 4096,
+   "tt_time": 0.0010251619999053219,
+   "res_gen": 206,
+   "res_time": 0.0022053769999956785,
+   "capped": false,
+   "winner": "TT"
+  },
+  {
+   "p": 4,
+   "m": 20,
+   "tt_models": 1048576,
+   "tt_time": 0.4041941280000856,
+   "res_gen": 7461,
+   "res_time": 0.9334883889999901,
+   "capped": false,
+   "winner": "TT"
+  },
+  {
+   "p": 5,
+   "m": 30,
+   "tt_models": 1073741824,
+   "tt_time": null,
+   "res_gen": 20000,
+   "res_time": 16.138014172,
+   "capped": true,
+   "winner": "neither"
+  }
+ ],
+ "rand": [
+  {
+   "seed": 0,
+   "tt_models": 32768,
+   "tt_time": 0.01699590700002318,
+   "res_gen": 807,
+   "res_gen_nosub": 1802,
+   "capped": false,
+   "res_time": 0.01834762199996476
+  },
+  {
+   "seed": 1,
+   "tt_models": 32768,
+   "tt_time": 0.01627274400004808,
+   "res_gen": 773,
+   "res_gen_nosub": 2710,
+   "capped": false,
+   "res_time": 0.014807973000074526
+  },
+  {
+   "seed": 2,
+   "tt_models": 14455,
+   "tt_time": 0.006670549999967079,
+   "res_gen": 670,
+   "res_gen_nosub": 30000,
+   "capped": true,
+   "res_time": 0.010666005999951267
+  }
+ ]
+}

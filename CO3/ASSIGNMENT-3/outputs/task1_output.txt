@@ -1,0 +1,163 @@
+====================================================================================================
+TASK 1  PART A  -  Wumpus-world KB and truth-table model checking
+====================================================================================================
+
+[1] Symbol / sentence / model counts as a function of n   (symbols m = 4n^2, models = 2^m)
+  n  symbols m   sentences               models 2^m   pit-only symbols
+  2         16          17                   65,536                  8
+  3         36          57           68,719,476,736                 18
+  4         64         155 18,446,744,073,709,551,616                 32
+  5        100         353 1,267,650,600,228,229,401,496,703,205,376                 50
+  (formula 2 + 2n^2 + 1 + n^2(n^2-1)/2 verified against the generated KB for n = 2, 3, 4)
+
+[2] Truth-table entailment experiments  (full symbol set vs relevant-symbol restriction)
+ n query type         query          mode         m         models       KB evals   time(s)  verdict
+----------------------------------------------------------------------------------------------------
+ 2 ENTAILED           safe(1,2)      relevant     8            257            257    0.0000  safe entailed
+ 2 ENTAILED           safe(1,2)      full        16         65,634         65,634    0.0122  safe entailed
+ 2 NEGATION ENTAILED  safe(2,2)      relevant    12          5,202          5,202    0.0009  negation entailed (unsafe)
+ 2 NEGATION ENTAILED  safe(2,2)      full        16         90,466         90,466    0.0179  negation entailed (unsafe)
+ 2 NEITHER            safe(2,2)      relevant    10             39             39    0.0000  neither entailed
+ 2 NEITHER            safe(2,2)      full        16         25,126         25,126    0.0046  neither entailed
+
+ 3 ENTAILED           safe(1,2)      relevant     8            257            257    0.0000  safe entailed
+ 3 ENTAILED           safe(1,2)      full        36      6.872e+10              - INFEASIBLE  est. 2.51e+04 s (= 7.96e-04 years)
+                                     DPLL full  cross-check on full KB -> safe entailed  (MATCH)
+ 3 NEGATION ENTAILED  safe(3,1)      relevant    18        295,425        295,425    0.0682  negation entailed (unsafe)
+ 3 NEGATION ENTAILED  safe(3,1)      full        36      6.872e+10              - INFEASIBLE  est. 2.51e+04 s (= 7.96e-04 years)
+                                     DPLL full  cross-check on full KB -> negation entailed (unsafe)  (MATCH)
+ 3 NEITHER            safe(2,2)      relevant    10              3              3    0.0000  neither entailed
+ 3 NEITHER            safe(2,2)      full        36      6.872e+10              - INFEASIBLE  est. 2.51e+04 s (= 7.96e-04 years)
+                                     DPLL full  cross-check on full KB -> neither entailed  (MATCH)
+
+ 4 ENTAILED           safe(1,2)      relevant     8            257            257    0.0000  safe entailed
+ 4 ENTAILED           safe(1,2)      full        64      1.845e+19              - INFEASIBLE  est. 6.73e+12 s (= 2.14e+05 years)
+                                     DPLL full  cross-check on full KB -> safe entailed  (MATCH)
+ 4 NEGATION ENTAILED  safe(3,1)      relevant    18        295,425        295,425    0.0659  negation entailed (unsafe)
+ 4 NEGATION ENTAILED  safe(3,1)      full        64      1.845e+19              - INFEASIBLE  est. 6.73e+12 s (= 2.14e+05 years)
+                                     DPLL full  cross-check on full KB -> negation entailed (unsafe)  (MATCH)
+ 4 NEITHER            safe(2,2)      relevant    10              3              3    0.0000  neither entailed
+ 4 NEITHER            safe(2,2)      full        64      1.845e+19              - INFEASIBLE  est. 6.73e+12 s (= 2.14e+05 years)
+                                     DPLL full  cross-check on full KB -> neither entailed  (MATCH)
+
+[3] Minimal relevant symbol set for the query safe(2,2) with S1 percepts (n = 4):
+    ['B_1_1', 'P_1_1', 'P_1_2', 'P_2_1', 'P_2_2', 'S_1_1', 'W_1_1', 'W_1_2', 'W_2_1', 'W_2_2'] -> m = 10 (instead of 64), 2^10 = 1024 models
+
+====================================================================================================
+TASK 1  PART B  -  Reasoning patterns: Modus Ponens, And-Elimination, Unit Resolution
+====================================================================================================
+
+Scenario: n = 3, percepts [((1, 1), False, False), ((2, 1), True, False), ((1, 2), False, False)]
+  safe[2,2] derived by rules?  True
+  safe[1,3] derived by rules?  True
+  safe[3,1] derived by rules?  False
+
+Step-by-step derivation (complete forward derivation, all percepts):
+  step   1 And-Elimination     | ~B_1_1 ∧ ~S_1_1 ∧ ~P_1_1 ∧ ~W_1_1                          => ~B_1_1
+  step   2 And-Elimination     | ~B_1_1 ∧ ~S_1_1 ∧ ~P_1_1 ∧ ~W_1_1                          => ~S_1_1
+  step   3 And-Elimination     | ~B_1_1 ∧ ~S_1_1 ∧ ~P_1_1 ∧ ~W_1_1                          => ~P_1_1
+  step   4 And-Elimination     | ~B_1_1 ∧ ~S_1_1 ∧ ~P_1_1 ∧ ~W_1_1                          => ~W_1_1
+  step   5 And-Elimination     | B_2_1 ∧ ~S_2_1 ∧ ~P_2_1 ∧ ~W_2_1                           => B_2_1
+  step   6 And-Elimination     | B_2_1 ∧ ~S_2_1 ∧ ~P_2_1 ∧ ~W_2_1                           => ~S_2_1
+  step   7 And-Elimination     | B_2_1 ∧ ~S_2_1 ∧ ~P_2_1 ∧ ~W_2_1                           => ~P_2_1
+  step   8 And-Elimination     | B_2_1 ∧ ~S_2_1 ∧ ~P_2_1 ∧ ~W_2_1                           => ~W_2_1
+  step   9 And-Elimination     | ~B_1_2 ∧ ~S_1_2 ∧ ~P_1_2 ∧ ~W_1_2                          => ~B_1_2
+  step  10 And-Elimination     | ~B_1_2 ∧ ~S_1_2 ∧ ~P_1_2 ∧ ~W_1_2                          => ~S_1_2
+  step  11 And-Elimination     | ~B_1_2 ∧ ~S_1_2 ∧ ~P_1_2 ∧ ~W_1_2                          => ~P_1_2
+  step  12 And-Elimination     | ~B_1_2 ∧ ~S_1_2 ∧ ~P_1_2 ∧ ~W_1_2                          => ~W_1_2
+  step  13 Biconditional-Elim  | B_1_1 ⇔ (P_2_1 ∨ P_1_2)                                    => (P_2_1 ∨ P_1_2) ⇒ B_1_1  and  B_1_1 ⇒ (P_2_1 ∨ P_1_2)
+  step  14 And-Elimination     | (~P_2_1 ∨ B_1_1) ∧ (~P_1_2 ∨ B_1_1)                        => ~P_2_1 ∨ B_1_1
+  step  15 Unit Resolution     | (~P_2_1 ∨ B_1_1) , ~B_1_1                                  => ~P_2_1
+  step  16 And-Elimination     | (~P_2_1 ∨ B_1_1) ∧ (~P_1_2 ∨ B_1_1)                        => ~P_1_2 ∨ B_1_1
+  step  17 Unit Resolution     | (~P_1_2 ∨ B_1_1) , ~B_1_1                                  => ~P_1_2
+  step  18 Biconditional-Elim  | S_1_1 ⇔ (W_2_1 ∨ W_1_2)                                    => (W_2_1 ∨ W_1_2) ⇒ S_1_1  and  S_1_1 ⇒ (W_2_1 ∨ W_1_2)
+  step  19 And-Elimination     | (~W_2_1 ∨ S_1_1) ∧ (~W_1_2 ∨ S_1_1)                        => ~W_2_1 ∨ S_1_1
+  step  20 Unit Resolution     | (~W_2_1 ∨ S_1_1) , ~S_1_1                                  => ~W_2_1
+  step  21 And-Elimination     | (~W_2_1 ∨ S_1_1) ∧ (~W_1_2 ∨ S_1_1)                        => ~W_1_2 ∨ S_1_1
+  step  22 Unit Resolution     | (~W_1_2 ∨ S_1_1) , ~S_1_1                                  => ~W_1_2
+  step  23 Biconditional-Elim  | S_2_1 ⇔ (W_1_1 ∨ W_3_1 ∨ W_2_2)                            => (W_1_1 ∨ W_3_1 ∨ W_2_2) ⇒ S_2_1  and  S_2_1 ⇒ (W_1_1 ∨ W
+  step  24 And-Elimination     | (~W_1_1 ∨ S_2_1) ∧ (~W_3_1 ∨ S_2_1) ∧ (~W_2_2 ∨ S_2_1)     => ~W_1_1 ∨ S_2_1
+  step  25 Unit Resolution     | (~W_1_1 ∨ S_2_1) , ~S_2_1                                  => ~W_1_1
+  step  26 And-Elimination     | (~W_1_1 ∨ S_2_1) ∧ (~W_3_1 ∨ S_2_1) ∧ (~W_2_2 ∨ S_2_1)     => ~W_3_1 ∨ S_2_1
+  step  27 Unit Resolution     | (~W_3_1 ∨ S_2_1) , ~S_2_1                                  => ~W_3_1
+  step  28 And-Elimination     | (~W_1_1 ∨ S_2_1) ∧ (~W_3_1 ∨ S_2_1) ∧ (~W_2_2 ∨ S_2_1)     => ~W_2_2 ∨ S_2_1
+  step  29 Unit Resolution     | (~W_2_2 ∨ S_2_1) , ~S_2_1                                  => ~W_2_2
+  step  30 Biconditional-Elim  | B_1_2 ⇔ (P_2_2 ∨ P_1_1 ∨ P_1_3)                            => (P_2_2 ∨ P_1_1 ∨ P_1_3) ⇒ B_1_2  and  B_1_2 ⇒ (P_2_2 ∨ P
+  step  31 And-Elimination     | (~P_2_2 ∨ B_1_2) ∧ (~P_1_1 ∨ B_1_2) ∧ (~P_1_3 ∨ B_1_2)     => ~P_2_2 ∨ B_1_2
+  step  32 Unit Resolution     | (~P_2_2 ∨ B_1_2) , ~B_1_2                                  => ~P_2_2
+  step  33 And-Elimination     | (~P_2_2 ∨ B_1_2) ∧ (~P_1_1 ∨ B_1_2) ∧ (~P_1_3 ∨ B_1_2)     => ~P_1_1 ∨ B_1_2
+  step  34 Unit Resolution     | (~P_1_1 ∨ B_1_2) , ~B_1_2                                  => ~P_1_1
+  step  35 And-Elimination     | (~P_2_2 ∨ B_1_2) ∧ (~P_1_1 ∨ B_1_2) ∧ (~P_1_3 ∨ B_1_2)     => ~P_1_3 ∨ B_1_2
+  step  36 Unit Resolution     | (~P_1_3 ∨ B_1_2) , ~B_1_2                                  => ~P_1_3
+  step  37 Biconditional-Elim  | S_1_2 ⇔ (W_2_2 ∨ W_1_1 ∨ W_1_3)                            => (W_2_2 ∨ W_1_1 ∨ W_1_3) ⇒ S_1_2  and  S_1_2 ⇒ (W_2_2 ∨ W
+  step  38 And-Elimination     | (~W_2_2 ∨ S_1_2) ∧ (~W_1_1 ∨ S_1_2) ∧ (~W_1_3 ∨ S_1_2)     => ~W_2_2 ∨ S_1_2
+  step  39 Unit Resolution     | (~W_2_2 ∨ S_1_2) , ~S_1_2                                  => ~W_2_2
+  step  40 And-Elimination     | (~W_2_2 ∨ S_1_2) ∧ (~W_1_1 ∨ S_1_2) ∧ (~W_1_3 ∨ S_1_2)     => ~W_1_1 ∨ S_1_2
+  step  41 Unit Resolution     | (~W_1_1 ∨ S_1_2) , ~S_1_2                                  => ~W_1_1
+  step  42 And-Elimination     | (~W_2_2 ∨ S_1_2) ∧ (~W_1_1 ∨ S_1_2) ∧ (~W_1_3 ∨ S_1_2)     => ~W_1_3 ∨ S_1_2
+  step  43 Unit Resolution     | (~W_1_3 ∨ S_1_2) , ~S_1_2                                  => ~W_1_3
+  step  44 Biconditional-Elim  | B_2_1 ⇔ (P_1_1 ∨ P_3_1 ∨ P_2_2)                            => (P_1_1 ∨ P_3_1 ∨ P_2_2) ⇒ B_2_1  and  B_2_1 ⇒ (P_1_1 ∨ P
+  step  45 Modus Ponens        | B_2_1 , B_2_1 ⇒ (P_1_1 ∨ P_3_1 ∨ P_2_2)                    => P_1_1 ∨ P_3_1 ∨ P_2_2
+  step  46 Unit Resolution     | (P_1_1 ∨ P_3_1 ∨ P_2_2) , ~P_1_1                           => P_3_1 ∨ P_2_2
+  step  47 Unit Resolution     | (P_3_1 ∨ P_2_2) , ~P_2_2                                   => P_3_1
+  step  48 And-Introduction    | ~P_2_2 , ~W_2_2                                            => ~P_2_2 ∧ ~W_2_2   (= safe[2,2])
+  step  49 And-Introduction    | ~P_1_3 , ~W_1_3                                            => ~P_1_3 ∧ ~W_1_3   (= safe[1,3])
+
+Rule usage count (whole forward run): {'Modus Ponens': 1, 'And-Elimination': 25, 'Unit Resolution': 15, 'Biconditional-Elim': 6, 'And-Introduction': 2}  TOTAL steps = 49
+Positive hazards forced by the rules: ['P_3_1']  -> square [3,1] holds a pit, hence it is NOT safe
+  steps needed (backward slice) for safe[2, 2] = 9  [MP=0, AE=4, UR=2, other=3]
+  steps needed (backward slice) for safe[1, 3] = 9  [MP=0, AE=4, UR=2, other=3]
+  steps needed for both queries together (shared steps counted once) = 14
+
+Comparison for the query safe[2,2]  (n = 3):
+  inference rules          : 9 inference steps (sliced), 49 steps for the full forward run
+  model checking, relevant : 295,425 models enumerated (18 symbols), 0.0651 s, verdict safe entailed
+  model checking, full KB  : 2^36 = 68,719,476,736 models  (INFEASIBLE)
+  ratio relevant-MC models / rule steps = 32,825 : 1
+
+--- "Not derived" is not the same as "false" ---
+  scenario S1 (only [1,1] visited): safe[2,2] derivable by rules? False;  model checking says: neither entailed
+  KB = {A ∨ B, A ⇒ C, B ⇒ C} : truth table says KB |= C ? True  but MP + AE + UR alone cannot derive C (no unit literal available) -> rule set incomplete,
+  therefore "not derived" means "unknown", never "false"; only a complete procedure (resolution) can derive C: True
+
+--- Soundness truth tables (premises true => conclusion true in every row) ---
+
+Modus Ponens: a, a⇒b |= b
+     a      b     premises  conclusion  sound-row
+     T      T        T          T       ok
+     T      F        F          F       ok
+     F      T        F          T       ok
+     F      F        F          F       ok
+   => Modus Ponens is SOUND
+
+And-Elimination: a∧b |= a
+     a      b     premises  conclusion  sound-row
+     T      T        T          T       ok
+     T      F        F          T       ok
+     F      T        F          F       ok
+     F      F        F          F       ok
+   => And-Elimination is SOUND
+
+Unit Resolution: (a∨b), ¬a |= b
+     a      b     premises  conclusion  sound-row
+     T      T        F          T       ok
+     T      F        F          F       ok
+     F      T        T          T       ok
+     F      F        F          F       ok
+   => Unit Resolution is SOUND
+
+And-Introduction: a, b |= a∧b
+     a      b     premises  conclusion  sound-row
+     T      T        T          T       ok
+     T      F        F          F       ok
+     F      T        F          F       ok
+     F      F        F          F       ok
+   => And-Introduction is SOUND
+
+Biconditional-Elim: a⇔b |= (a⇒b)∧(b⇒a)
+     a      b     premises  conclusion  sound-row
+     T      T        T          T       ok
+     T      F        F          F       ok
+     F      T        F          F       ok
+     F      F        T          T       ok
+   => Biconditional-Elim is SOUND

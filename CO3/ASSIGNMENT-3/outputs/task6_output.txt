@@ -1,0 +1,57 @@
+====================================================================================================
+TASK 6  -  Forward vs backward chaining on the organisation KB
+====================================================================================================
+
+[1] The 10 definite-clause rules
+   R1  Superior base                                Superior(?m,?e)  <=  ReportsTo(?e,?m)
+   R2  Superior (right-recursive)                   Superior(?m,?e)  <=  ReportsTo(?e,?y) ∧ Superior(?m,?y)
+   R3  Peer                                         Peer(?x,?y)  <=  ReportsTo(?x,?m) ∧ ReportsTo(?y,?m) ∧ neq(?x,?y)
+   R4  SameDept                                     SameDept(?x,?y)  <=  InDept(?x,?d) ∧ InDept(?y,?d) ∧ neq(?x,?y)
+   R5  Approver (small request: direct manager)     Approver(?m,?r)  <=  RequestBy(?r,?e) ∧ ReportsTo(?e,?m) ∧ Small(?r)
+   R6  Approver (large request: a director above)   Approver(?m,?r)  <=  RequestBy(?r,?e) ∧ Superior(?m,?e) ∧ Large(?r) ∧ Director(?m)
+   R7  Authorised                                   Authorised(?m,?r)  <=  Approver(?m,?r) ∧ Active(?m)
+   R8  Escalate                                     Escalate(?r,?m)  <=  RequestBy(?r,?e) ∧ Superior(?m,?e)
+   R9  Delegate                                     Delegate(?x,?y)  <=  Peer(?x,?y) ∧ SameDept(?x,?y) ∧ Active(?y)
+   R10 Chain-to-director                            Chain(?e,?m)  <=  Superior(?m,?e) ∧ Director(?m)
+   R2L Superior (LEFT-recursive)                    Superior(?m,?e)  <=  Superior(?y,?e) ∧ ReportsTo(?y,?m)    (replaces R2 in Part B)
+
+[2] Student A  -  forward chaining to a fixed point
+   query used for the "relevance" column: Authorised(?m, r2)   (who may approve request r2?)
+    facts mode         inferred   firings  redundant redund % iterations   time s  irrelevant % of derived
+      100 naive             312      1649       1337     81.1          6     0.02                   99.36%
+      100 semi-naive        312       312          0      0.0          6     0.01                   99.36%
+     1000 naive            3926     26071      22145     84.9          8     0.25                   99.95%
+     1000 semi-naive       3926      3926          0      0.0          8     0.14                   99.95%
+    10000 naive           47415    372151     324736     87.3         10     3.81                  100.00%
+    10000 semi-naive      47415     47415          0      0.0         10     2.40                  100.00%
+   When the query touches a tiny part of the KB, forward chaining still derives EVERY consequence of EVERY rule:
+   the work (firings) is identical for a query about one request and for a query about all requests.
+
+[3] Student B  -  backward chaining with substitutions (right-recursive Superior, query Authorised(?m, r2))
+    facts goals expanded unifications max depth repeated subgoals  answers  time ms | FC firings FC/BC unif ratio
+      100             22           22         6                 8        1     0.35 |       1649               75
+     1000             22           22         6                 8        1     0.28 |      26071             1185
+    10000             22           22         6                 8        1     0.26 |     372151            16916
+   Answer for F=10000: e5
+   BC cost depends on the length of the proof (≤ hierarchy depth), NOT on how many unrelated facts the KB holds.
+
+[4] Left-recursive rule  Superior(m,e) <= Superior(y,e) ∧ ReportsTo(y,m)  -- naive BC never terminates
+   query Superior(?m, e_deep): correct answers come from the right-recursive KB; cap = 20,000 goal expansions
+    facts strategy               outcome                answers correct     goals     unifs max depth  repeated  time ms
+      100 naive                  NON-TERMINATING (cap)        0     n/a     20001     20003      4002     19996  1718.57
+      100 loop check             terminated                   1 NO (1/3)         2         3         1         0     0.09
+      100 depth bound (d=12)     terminated                   3     yes        55        59        12        50     0.60
+      100 tabling                terminated                   3     yes        10        26         0         5     0.20
+     1000 naive                  NON-TERMINATING (cap)        0     n/a     20001     20005      2860     19994  1069.66
+     1000 loop check             terminated                   1 NO (1/5)         2         3         1         0     0.10
+     1000 depth bound (d=12)     terminated                   5     yes        70        76        12        63     0.75
+     1000 tabling                terminated                   5     yes        16        54         0         9     0.40
+    10000 naive                  NON-TERMINATING (cap)        0     n/a     20001     20007      2226     19992   721.21
+    10000 loop check             terminated                   1 NO (1/7)         2         3         1         0     0.09
+    10000 depth bound (d=12)     terminated                   7     yes        81        89        12        72     0.79
+    10000 tabling                terminated                   7     yes        22        90         0        13     0.46
+   loop check: sound but INCOMPLETE (it prunes the recursive branch that carries the 2nd, 3rd, ... superior).
+   depth bound: complete only if the bound ≥ hierarchy depth; wastes work re-deriving the same subgoals.
+   tabling (memoise answers per variant subgoal, iterate to fixpoint): complete, terminates, cost ≈ depth × answers.
+
+plots written: plots/task6_fc_vs_bc.png

@@ -1,0 +1,132 @@
+====================================================================================================
+TASK 2  -  Model checking versus resolution
+====================================================================================================
+
+[1] Smart-building access-control policy (14 rules)
+  R1   (E ⇔ ¬V)                                                                      
+       A person is an employee iff not a visitor
+  R2   (BV ⇔ ¬BX)                                                                    
+       A badge is valid iff it is not expired
+  R3   ((((E ∧ BV) ∧ BH) ∧ ¬LD) ⇒ ACC)                                               
+       Employee + valid badge + business hours + no lockdown => access
+  R4   ((((V ∧ ESC) ∧ BH) ∧ ¬LD) ⇒ ACC)                                              
+       Escorted visitor in business hours, no lockdown => access
+  R5   (EM ⇒ ACC)                                                                    
+       Emergency override grants access (evacuation)
+  R6   (ACC ⇔ DU)                                                                    
+       Access is granted iff the door unlocks
+  R7   (((V ∧ ¬ESC) ∧ ¬EM) ⇒ ¬ACC)                                                   
+       Unescorted visitors never enter (no emergency)
+  R8   ((LD ∧ ¬EM) ⇒ ¬ACC)                                                           
+       Lockdown blocks access unless emergency
+  R9   (((RA ∧ ¬CL) ∧ ¬EM) ⇒ ¬ACC)                                                   
+       Restricted area needs clearance
+  R10  (AL ⇒ (LD ∨ EM))                                                              
+       An alarm implies lockdown or emergency
+  R11  ((BX ∧ ¬EM) ⇒ ¬ACC)                                                           
+       Expired badge blocks access
+  R12  (ACC ⇒ LOG)                                                                   
+       Every granted access is logged
+  R13  (¬BH ⇒ ((EM ∨ ¬ACC) ∨ (E ∧ CL)))                                              
+       Out of hours: only emergency or cleared employees
+  R14  ((E ∧ BX) ⇒ ¬DU)                                                              
+       Employee with expired badge: door stays locked
+
+  symbols = 14, rules = 14, rules with ⇒ = 11, with ⇔ = 3, with ∨ = 2
+
+[2] Manual CNF conversion (three sentences) -- machine check of the hand derivation
+
+  R1:
+    original                               (E ⇔ ¬V)
+    1. eliminate ⇔                         ((E ⇒ ¬V) ∧ (¬V ⇒ E))
+    2. eliminate ⇒                         ((¬E ∨ ¬V) ∧ (¬(¬V) ∨ E))
+    3. push ¬ inward (NNF)                 ((¬E ∨ ¬V) ∧ (V ∨ E))
+    4. distribute ∨ over ∧ -> clauses      {~E, ~V}  ∧  {E, V}
+
+  R3:
+    original                               ((((E ∧ BV) ∧ BH) ∧ ¬LD) ⇒ ACC)
+    1. eliminate ⇔                         ((((E ∧ BV) ∧ BH) ∧ ¬LD) ⇒ ACC)
+    2. eliminate ⇒                         (¬((((E ∧ BV) ∧ BH) ∧ ¬LD)) ∨ ACC)
+    3. push ¬ inward (NNF)                 ((((¬E ∨ ¬BV) ∨ ¬BH) ∨ LD) ∨ ACC)
+    4. distribute ∨ over ∧ -> clauses      {ACC, ~BH, ~BV, ~E, LD}
+
+  R10:
+    original                               (AL ⇒ (LD ∨ EM))
+    1. eliminate ⇔                         (AL ⇒ (LD ∨ EM))
+    2. eliminate ⇒                         (¬AL ∨ (LD ∨ EM))
+    3. push ¬ inward (NNF)                 (¬AL ∨ (LD ∨ EM))
+    4. distribute ∨ over ∧ -> clauses      {~AL, EM, LD}
+
+[3] Queries on the policy: resolution vs truth table (same KB + facts)
+  query                    method           verdict      models clauses gen  attempts  taut subsumed  time(ms)
+  Q1 (entailed)            truth table      True         16,384           -         -     -        -      3.33
+                           resolution       True              -          21        69    19       47      0.47
+                           res. on ¬query   False             -          10        52    15       37      0.34
+  Q2 (negation entailed)   truth table      False           514           -         -     -        -      0.08
+                           resolution       False             -           3        53    24       27      0.33
+                           res. on ¬query   True              -          25        52    10       44      0.38
+  Q3 (not entailed)        truth table      False         2,586           -         -     -        -      0.52
+                           resolution       False             -          13        92    38       53      0.42
+                           res. on ¬query   False             -          18        70    20       51      0.42
+
+[4] Resolution proof of Q1  (KB ∧ ¬AccessGranted  |-  {})
+  [ 1] {ACC, ~BH, ~BV, ~E, LD}            (input clause)
+  [ 2] {~ACC}                             (input clause)
+  [ 3] {~BH, ~BV, ~E, LD}                 <- resolve [1] , [2] on ACC
+  [ 4] {BH}                               (input clause)
+  [ 5] {~BV, ~E, LD}                      <- resolve [3] , [4] on BH
+  [ 6] {BV}                               (input clause)
+  [ 7] {~E, LD}                           <- resolve [5] , [6] on BV
+  [ 8] {E}                                (input clause)
+  [ 9] {LD}                               <- resolve [7] , [8] on E
+  [10] {~LD}                              (input clause)
+  [11] {}                                 <- resolve [9] , [10] on LD
+  proof length (resolution steps in the refutation) = 5
+
+[5] Non-entailed query Q3: resolution terminates with NO empty clause.
+    clauses generated = 13, attempted = 92, result entailed = False
+    Reason: the set of clauses over 14 symbols is finite (at most 3^14), every resolvent is new or a duplicate,
+    so the saturation loop must reach a fixed point; the empty clause is absent => KB ∧ ¬α satisfiable => not entailed.
+
+[6] Implication chains  A0, A0⇒A1, ..., A(n-1)⇒An ;  query An   (entailed)   and   A(n+1) (not entailed)
+    n variant                    verdict  clauses gen attempted  taut subsumed  time(ms)
+   10 unit-pref + subsumption    True              12        12     0       10      0.21
+   10 FIFO, no subsumption       True              66       198     0        0      0.61
+   10 not entailed A(n+1)        False             10        10     0       10      0.16
+   10 truth table                True           2,048 models       0.42 ms
+   20 unit-pref + subsumption    True              22        22     0       20      0.36
+   20 FIFO, no subsumption       True             231      1231     0        0      3.19
+   20 not entailed A(n+1)        False             20        20     0       20      0.32
+   20 truth table                True       2,097,152 models     395.48 ms
+   40 unit-pref + subsumption    True              42        42     0       40      0.54
+   40 FIFO, no subsumption       True             861      8682     0        0     13.31
+   40 not entailed A(n+1)        False             40        40     0       40      0.45
+   40 truth table                INFEAS.  2^41 = 2.199e+12 models
+   80 unit-pref + subsumption    True              82        82     0       80      0.81
+   80 FIFO, no subsumption       True            3321     63905     0        0     90.99
+   80 not entailed A(n+1)        False             80        80     0       80      0.89
+   80 truth table                INFEAS.  2^81 = 2.418e+24 models
+
+[7] Chain n=5 plus z irrelevant facts (symbols grow, relevant structure does not)
+    z  symbols     models(TT)  TT time(ms)  res gen  res time(ms)
+    0        6             64          0.0        6         0.109
+    5       11          2,048          0.3        6         0.081
+   10       16         65,536          9.5        6         0.110
+   15       21      2,097,152        401.8        6         0.158
+   18       24     16,777,216       3550.7        6         0.198
+   22       28    268,435,456       INFEAS        6         0.138
+
+[8] Pigeonhole PHP(p+1 pigeons, p holes) -- unsatisfiable, so KB entails every query  (query X0_0)
+   p  symbols  clauses    TT models     TT ms   res gen res attempted    res ms  winner
+   2        6        9           64       0.0        11            14       0.2  TT 
+   3       12       22        4,096       1.0       206           458       2.2  TT 
+   4       20       45    1,048,576     404.2      7461         39801     933.5  TT 
+   5       30       81 1,073,741,824    INFEAS     20000         71294   16138.0  neither (capped)
+
+[9] Dense random 3-CNF, m=14 symbols, 80 clauses, query Q (a fresh symbol) -- three seeds
+  seed  KB sat?  TT models    TT ms  res gen  res no-subsump. gen   res ms
+     0    unsat     32,768     17.0      807                 1802      18.3
+     1    unsat     32,768     16.3      773                 2710      14.8
+     2      sat     14,455      6.7      670                30000+     10.7
+
+plots written to plots/task2_scaling.png, plots/task2_php.png, plots/task2_proof_tree.png

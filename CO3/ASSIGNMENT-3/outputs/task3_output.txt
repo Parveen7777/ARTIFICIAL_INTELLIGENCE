@@ -1,0 +1,98 @@
+====================================================================================================
+TASK 3  -  Knowledge engineering in FOL: exam-eligibility advisor
+====================================================================================================
+
+[1] Knowledge-engineering process (summary)
+   step 1: Identify the task: decide Eligible(s,c) and explain; list who may sit an exam
+   step 2: Assemble knowledge: attendance, prerequisites, fees, discipline, approved leave, examiner
+   step 3: Vocabulary: Student, Course, Enrolled, AttOK, ApprovedLeave, Passed, Prereq, FeesPaid, FeeWaiver, Disciplined, Reinstated, Examiner, ...
+   step 4: Encode general knowledge: axioms A1-A13 (below)
+   step 5: Encode the instance: campus_facts() = 6 students, 5 courses
+   step 6: Pose queries: 15 competency questions
+   step 7: Debug the KB: v1 failed 3 queries -> 3 defects fixed -> v2
+
+[2] FOL axioms (13, universally quantified; A3 and A9 contain existentials)
+   A1   ∀s,c Enrolled(s,c) ∧ AttOK(s,c) ⇒ AttCleared(s,c)
+   A2   ∀s,c Enrolled(s,c) ∧ ApprovedLeave(s,c) ⇒ AttCleared(s,c)
+   A3   ∀s,c MissingPrereq(s,c) ⇔ ∃p (Prereq(p,c) ∧ ¬Passed(s,p))
+   A4   ∀s,c Enrolled(s,c) ∧ ¬MissingPrereq(s,c) ⇒ PrereqCleared(s,c)
+   A5   ∀s FeesPaid(s) ⇒ FeesOK(s)
+   A6   ∀s FeeWaiver(s) ⇒ FeesOK(s)
+   A7   ∀s Disciplined(s) ∧ ¬Reinstated(s) ⇒ Barred(s)
+   A8   ∀s,c AttCleared(s,c) ∧ PrereqCleared(s,c) ∧ FeesOK(s) ∧ ¬Barred(s) ⇒ Eligible(s,c)
+   A9   ∀c Course(c) ⇒ ∃e Examiner(e,c)          [existential; Skolem function exam(c)]
+   A10  ∀s,c Eligible(s,c) ∧ ∃e Examiner(e,c) ⇒ HallTicket(s,c)
+   A11  ∀s,c Enrolled(s,c) ∧ ¬AttCleared(s,c) ⇒ ShortAttendance(s,c)
+   A12  ∀s,c Enrolled(s,c) ∧ ¬Eligible(s,c) ⇒ Ineligible(s,c)
+   A13  ∀s1,s2,c Enrolled(s1,c) ∧ Enrolled(s2,c) ∧ s1≠s2 ⇒ Classmates(s1,s2)
+
+[3] Debugging: run the 15 competency queries on KB version 1 (naive) and version 2 (fixed)
+
+  KB v1: 9/15 competency queries pass
+  id   kind     query                        expected                       actual                         result
+  Q1   succeed  Eligible(alice,CS201)        True                           True                           PASS
+  Q2   succeed  Eligible(frank,CS201)        True                           False                          FAIL
+  Q3   succeed  Eligible(carol,CS301)        True                           False                          FAIL
+  Q4   succeed  Eligible(erin,CS101)         True                           False                          FAIL
+  Q5   succeed  HallTicket(alice,CS201)      True                           True                           PASS
+  Q6   fail     Eligible(bob,CS201)          False                          True                           FAIL
+  Q7   fail     Eligible(dave,CS101)         False                          False                          PASS
+  Q8   fail     Eligible(dave,MA101)         False                          False                          PASS
+  Q9   fail     Eligible(alice,CS301)        False                          False                          PASS
+  Q10  fail     ShortAttendance(alice,CS201) False                          False                          PASS
+  Q11  bind     Eligible(?s,CS201)           alice, frank                   alice, bob                     FAIL
+  Q12  bind     MissingPrereq(bob,?c)        CS201, CS301                   CS201, CS301                   PASS
+  Q13  bind     Classmates(alice,?s)         bob, dave, frank               bob, dave, frank               PASS
+  Q14  bind     Ineligible(?s,?c)            ('bob', 'CS201'), ('dave', 'C  ('alice', 'MA101'), ('carol',  FAIL
+  Q15  bind     Examiner(?e,CS301)           exam(CS301)                    exam(CS301)                    PASS
+
+  KB v2: 15/15 competency queries pass
+  id   kind     query                        expected                       actual                         result
+  Q1   succeed  Eligible(alice,CS201)        True                           True                           PASS
+  Q2   succeed  Eligible(frank,CS201)        True                           True                           PASS
+  Q3   succeed  Eligible(carol,CS301)        True                           True                           PASS
+  Q4   succeed  Eligible(erin,CS101)         True                           True                           PASS
+  Q5   succeed  HallTicket(alice,CS201)      True                           True                           PASS
+  Q6   fail     Eligible(bob,CS201)          False                          False                          PASS
+  Q7   fail     Eligible(dave,CS101)         False                          False                          PASS
+  Q8   fail     Eligible(dave,MA101)         False                          False                          PASS
+  Q9   fail     Eligible(alice,CS301)        False                          False                          PASS
+  Q10  fail     ShortAttendance(alice,CS201) False                          False                          PASS
+  Q11  bind     Eligible(?s,CS201)           alice, frank                   alice, frank                   PASS
+  Q12  bind     MissingPrereq(bob,?c)        CS201, CS301                   CS201, CS301                   PASS
+  Q13  bind     Classmates(alice,?s)         bob, dave, frank               bob, dave, frank               PASS
+  Q14  bind     Ineligible(?s,?c)            ('bob', 'CS201'), ('dave', 'C  ('bob', 'CS201'), ('dave', 'C  PASS
+  Q15  bind     Examiner(?e,CS301)           exam(CS301)                    exam(CS301)                    PASS
+
+  DEFECT LOG
+   D1  v1 fails Q2: rule A2 (approved leave => attendance cleared) was missing.                       Fix: add A2.
+   D2  v1 fails Q3: Barred(s) ignored reinstatement (Disciplined => Barred).                         Fix: A7 with ¬Reinstated(s).
+   D3  v1 fails Q4, Q6, Q11, Q14: PrereqCleared needed a POSITIVE Passed(s,p), so courses with no
+       prerequisite were never cleared (Q4) and ONE passed prerequisite was enough (Q6).           Fix: A3/A4 via negation as failure.
+   D4  (test-oracle defect) the first expected answer of Q13 omitted dave, who shares MA101 with alice.
+       KB was right, the expectation was wrong; corrected in the query suite.                      Fix: expected = {bob, dave, frank}.
+
+[4] Growth derivation (propositional encoding), s students, c courses, ρ = average prerequisites per course
+   per (s,c): AttCleared×2, MissingPrereq×ρ, PrereqCleared, Eligible, HallTicket, ShortAttendance, Ineligible = 7 + ρ rules
+   per student: FeesOK×2, Barred = 3 ;  per course: Examiner = 1
+   N_prop(s,c) = (7+ρ)·s·c + 3s + c      -> grows as O(s·c)      N_FOL = 13 axioms (constant)
+   (the instance FACTS are needed by both encodings: F(s,c) ≈ s·(4·1.1 + 0.6c + 1.05) )
+
+[5] Size and inference-time experiment  (30 random Eligible(s,c) queries per cell; seeds fixed)
+     s   c |   facts  prop rules   prop KB  FOL KB | prop build ms  prop q ms prop tot ms | FOL build ms  FOL q ms FOL tot ms | cheaper
+     2   2 |      18          38        56      31 |          0.03       0.11        0.13 |         0.03      3.98       4.01 | propositional
+     3   3 |      38          81       119      51 |          0.05       0.11        0.16 |         0.03      5.55       5.58 | propositional
+     5   4 |      67         169       236      80 |          0.17       0.15        0.31 |         0.05      4.27       4.32 | propositional
+    10   5 |     129         415       544     142 |          0.32       0.09        0.41 |         0.05      3.64       3.69 | propositional
+    20   8 |     298        1288      1586     311 |          0.89       0.08        0.97 |         0.10      2.95       3.05 | propositional
+    40  10 |     647        3170      3817     660 |          2.94       0.11        3.05 |         0.20      2.94       3.15 | propositional
+    80  15 |    1486        9455     10941    1499 |         10.42       0.13       10.56 |         0.43      2.48       2.92 | FOL
+   150  20 |    3290       23420     26710    3303 |         81.91       0.13       82.04 |         1.07      2.34       3.41 | FOL
+   300  30 |    8391       69930     78321    8404 |        334.40       0.20      334.60 |         4.28      3.89       8.17 | FOL
+
+   Both encodings returned identical answers on every query (assert in code).
+   Size crossover: FOL KB is smaller as soon as (7+ρ)·s·c + 3s + c > 13 ,  i.e. from s·c ≈ 2 upward.
+   Total-time crossover (build + 30 queries): first cell where FOL is cheaper: s=80, c=15
+   Per-query cost: propositional lookups are faster per query (no unification); FOL pays unification per goal.
+
+plots written: plots/task3_size_time.png

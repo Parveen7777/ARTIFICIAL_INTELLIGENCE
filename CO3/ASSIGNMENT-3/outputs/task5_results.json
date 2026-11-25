@@ -1,0 +1,66 @@
+{
+ "q1": {
+  "none": {
+   "outcome": "PROVED",
+   "generated": 178,
+   "steps": 1153,
+   "unifs": 1153,
+   "proof_len": 8
+  },
+  "unit": {
+   "outcome": "PROVED",
+   "generated": 61,
+   "steps": 79,
+   "unifs": 79,
+   "proof_len": 10
+  },
+  "sos": {
+   "outcome": "PROVED",
+   "generated": 84,
+   "steps": 235,
+   "unifs": 235,
+   "proof_len": 8
+  },
+  "sos+unit": {
+   "outcome": "PROVED",
+   "generated": 17,
+   "steps": 17,
+   "unifs": 17,
+   "proof_len": 8
+  }
+ },
+ "q2": {
+  "finite (S1-S5)|none": {
+   "outcome": "SATURATED",
+   "generated": 94,
+   "steps": 568
+  },
+  "finite (S1-S5)|sos": {
+   "outcome": "SATURATED",
+   "generated": 1,
+   "steps": 1
+  },
+  "with function symbol (+S6)|none": {
+   "outcome": "CAP",
+   "generated": 848,
+   "steps": 3001
+  },
+  "with function symbol (+S6)|sos": {
+   "outcome": "SATURATED",
+   "generated": 1,
+   "steps": 1
+  }
+ },
+ "prop": {
+  "FIFO, no subsumption": {
+   "proved": true,
+   "generated": 224,
+   "attempted": 1180
+  },
+  "unit-pref + subsumption": {
+   "proved": true,
+   "generated": 36,
+   "attempted": 40
+  }
+ }
+}

@@ -1,0 +1,135 @@
+====================================================================================================
+TASK 5  -  First-order resolution
+====================================================================================================
+
+[1] English -> FOL -> CNF  (every conversion step)
+
+  S1  Every employee who handled a restricted document is authorised
+    FOL                    : ∀x ∀d ((((Employee(x) ∧ Document(d)) ∧ Restricted(d)) ∧ Handled(x,d)) ⇒ Authorised(x))
+    1. eliminate ⇒/⇔       : ∀x ∀d (¬(((Employee(x) ∧ Document(d)) ∧ Restricted(d)) ∧ Handled(x,d)) ∨ Authorised(x))
+    2. negations inward    : ∀x ∀d ((((¬Employee(x) ∨ ¬Document(d)) ∨ ¬Restricted(d)) ∨ ¬Handled(x,d)) ∨ Authorised(x))
+    3. standardise vars    : ∀x1 ∀d2 ((((¬Employee(x1) ∨ ¬Document(d2)) ∨ ¬Restricted(d2)) ∨ ¬Handled(x1,d2)) ∨ Authorised(x1))
+    4. Skolemise           : ∀x1 ∀d2 ((((¬Employee(x1) ∨ ¬Document(d2)) ∨ ¬Restricted(d2)) ∨ ¬Handled(x1,d2)) ∨ Authorised(x1))
+    5. drop ∀ (prenex)     : ((((¬Employee(x1) ∨ ¬Document(d2)) ∨ ¬Restricted(d2)) ∨ ¬Handled(x1,d2)) ∨ Authorised(x1))
+    6. distribute ∨ over ∧ : (¬Employee(x) ∨ ¬Document(y) ∨ ¬Restricted(y) ∨ ¬Handled(x,y) ∨ Authorised(x))
+
+  S2  Every document containing patient data is restricted
+    FOL                    : ∀d ((Document(d) ∧ ContainsPatientData(d)) ⇒ Restricted(d))
+    1. eliminate ⇒/⇔       : ∀d (¬(Document(d) ∧ ContainsPatientData(d)) ∨ Restricted(d))
+    2. negations inward    : ∀d ((¬Document(d) ∨ ¬ContainsPatientData(d)) ∨ Restricted(d))
+    3. standardise vars    : ∀d3 ((¬Document(d3) ∨ ¬ContainsPatientData(d3)) ∨ Restricted(d3))
+    4. Skolemise           : ∀d3 ((¬Document(d3) ∨ ¬ContainsPatientData(d3)) ∨ Restricted(d3))
+    5. drop ∀ (prenex)     : ((¬Document(d3) ∨ ¬ContainsPatientData(d3)) ∨ Restricted(d3))
+    6. distribute ∨ over ∧ : (¬Document(x) ∨ ¬ContainsPatientData(x) ∨ Restricted(x))
+
+  S3  Some employee handled every document that was audited
+    FOL                    : ∃x (Employee(x) ∧ ∀d ((Document(d) ∧ Audited(d)) ⇒ Handled(x,d)))
+    1. eliminate ⇒/⇔       : ∃x (Employee(x) ∧ ∀d (¬(Document(d) ∧ Audited(d)) ∨ Handled(x,d)))
+    2. negations inward    : ∃x (Employee(x) ∧ ∀d ((¬Document(d) ∨ ¬Audited(d)) ∨ Handled(x,d)))
+    3. standardise vars    : ∃x4 (Employee(x4) ∧ ∀d5 ((¬Document(d5) ∨ ¬Audited(d5)) ∨ Handled(x4,d5)))
+    4. Skolemise           : (Employee(SK1) ∧ ∀d5 ((¬Document(d5) ∨ ¬Audited(d5)) ∨ Handled(SK1,d5)))
+         · ∃x4 has NO enclosing ∀  ->  Skolem CONSTANT SK1
+    5. drop ∀ (prenex)     : (Employee(SK1) ∧ ((¬Document(d5) ∨ ¬Audited(d5)) ∨ Handled(SK1,d5)))
+    6. distribute ∨ over ∧ : (Employee(SK1))  ∧  (¬Document(x) ∨ ¬Audited(x) ∨ Handled(SK1,x))
+
+  S4  Report R1 contains patient data and R1 was audited
+    FOL                    : ((ContainsPatientData(R1) ∧ Audited(R1)) ∧ Report(R1))
+    1. eliminate ⇒/⇔       : ((ContainsPatientData(R1) ∧ Audited(R1)) ∧ Report(R1))
+    2. negations inward    : ((ContainsPatientData(R1) ∧ Audited(R1)) ∧ Report(R1))
+    3. standardise vars    : ((ContainsPatientData(R1) ∧ Audited(R1)) ∧ Report(R1))
+    4. Skolemise           : ((ContainsPatientData(R1) ∧ Audited(R1)) ∧ Report(R1))
+    5. drop ∀ (prenex)     : ((ContainsPatientData(R1) ∧ Audited(R1)) ∧ Report(R1))
+    6. distribute ∨ over ∧ : (ContainsPatientData(R1))  ∧  (Audited(R1))  ∧  (Report(R1))
+
+  S5  (background) every report is a document
+    FOL                    : ∀d (Report(d) ⇒ Document(d))
+    1. eliminate ⇒/⇔       : ∀d (¬Report(d) ∨ Document(d))
+    2. negations inward    : ∀d (¬Report(d) ∨ Document(d))
+    3. standardise vars    : ∀d6 (¬Report(d6) ∨ Document(d6))
+    4. Skolemise           : ∀d6 (¬Report(d6) ∨ Document(d6))
+    5. drop ∀ (prenex)     : (¬Report(d6) ∨ Document(d6))
+    6. distribute ∨ over ∧ : (¬Report(x) ∨ Document(x))
+
+  Negated query  Q1: ∃x Authorised(x)   ->   negate: ∀x ¬Authorised(x)
+
+  NEG-Q1  ¬(∃x Authorised(x))
+    FOL                    : ¬∃x Authorised(x)
+    1. eliminate ⇒/⇔       : ¬∃x Authorised(x)
+    2. negations inward    : ∀x ¬Authorised(x)
+    3. standardise vars    : ∀x7 ¬Authorised(x7)
+    4. Skolemise           : ∀x7 ¬Authorised(x7)
+    5. drop ∀ (prenex)     : ¬Authorised(x7)
+    6. distribute ∨ over ∧ : (¬Authorised(x))
+
+  KB clause list (numbered):
+    C1  ¬Employee(x) ∨ ¬Document(y) ∨ ¬Restricted(y) ∨ ¬Handled(x,y) ∨ Authorised(x)
+    C2  ¬Document(x) ∨ ¬ContainsPatientData(x) ∨ Restricted(x)
+    C3  Employee(SK1)
+    C4  ¬Document(x) ∨ ¬Audited(x) ∨ Handled(SK1,x)
+    C5  ContainsPatientData(R1)
+    C6  Audited(R1)
+    C7  Report(R1)
+    C8  ¬Report(x) ∨ Document(x)
+    C9  ¬Authorised(x)
+
+  Skolem justification: S3 = ∃x (Employee(x) ∧ ∀d …). The ∃ is not inside any ∀, so the witness does not depend on d:
+  a Skolem CONSTANT SK1 suffices.  (If the sentence were ∀d ∃x Handled(x,d), the witness could differ per document -> Skolem function sk(d).)
+
+[2] Resolution results for Q1 (entailed) with three strategies
+  strategy     outcome    clauses gen res. steps unifications given clauses proof length  time ms
+  none         PROVED             178       1153         1153           168            8    63.10
+  unit         PROVED              61         79           79            24           10     1.64
+  sos          PROVED              84        235          235            78            8    13.54
+  sos+unit     PROVED              17         17           17             8            8     0.46
+
+[3] Proof found with set-of-support + unit preference
+   [ 1] ¬Employee(x) ∨ ¬Document(y) ∨ ¬Restricted(y) ∨ ¬Handled(x,y) ∨ Authorised(x) (input)
+   [ 2] ¬Document(x) ∨ ¬ContainsPatientData(x) ∨ Restricted(x) (input)
+   [ 3] Employee(SK1)                                (input)
+   [ 4] ¬Document(x) ∨ ¬Audited(x) ∨ Handled(SK1,x)  (input)
+   [ 5] ContainsPatientData(R1)                      (input)
+   [ 6] Audited(R1)                                  (input)
+   [ 7] Report(R1)                                   (input)
+   [ 8] ¬Report(x) ∨ Document(x)                     (input)
+   [ 9] ¬Authorised(x)                               (input)
+   [10] ¬Employee(x) ∨ ¬Document(y) ∨ ¬Restricted(y) ∨ ¬Handled(x,y) <- resolve [9],[1]   θ = {x7/?x1}
+   [11] ¬Document(x) ∨ ¬Restricted(x) ∨ ¬Handled(SK1,x) <- resolve [10],[3]   θ = {x1/SK1}
+   [12] ¬Document(x) ∨ ¬Handled(SK1,x) ∨ ¬ContainsPatientData(x) <- resolve [11],[2]   θ = {d2/?d3}
+   [13] ¬Document(R1) ∨ ¬Handled(SK1,R1)             <- resolve [12],[5]   θ = {d3/R1}
+   [14] ¬Document(R1) ∨ ¬Audited(R1)                 <- resolve [13],[4]   θ = {d5/R1}
+   [15] ¬Document(R1)                                <- resolve [14],[6]   θ = {}
+   [16] ¬Report(R1)                                  <- resolve [15],[8]   θ = {d6/R1}
+   [17] □                                            <- resolve [16],[7]   θ = {}
+   conclusion: an authorised employee exists; the binding found is x = SK1 (the employee who handled every audited document).
+
+[4] Second query Q2: "some employee is NOT authorised" (not entailed)  -- step cap 3000 resolution steps
+   negated Q2 clause: ¬Employee(x) ∨ Authorised(x)
+
+  S6 (extension) every document has a revision that is also a document
+    FOL                    : ∀d (Document(d) ⇒ ∃r (Revision(r,d) ∧ Document(r)))
+    1. eliminate ⇒/⇔       : ∀d (¬Document(d) ∨ ∃r (Revision(r,d) ∧ Document(r)))
+    2. negations inward    : ∀d (¬Document(d) ∨ ∃r (Revision(r,d) ∧ Document(r)))
+    3. standardise vars    : ∀d18063 (¬Document(d18063) ∨ ∃r18064 (Revision(r18064,d18063) ∧ Document(r18064)))
+    4. Skolemise           : ∀d18063 (¬Document(d18063) ∨ (Revision(sk2(d18063),d18063) ∧ Document(sk2(d18063))))
+         · ∃r18064 is inside the scope of ∀d18063  ->  Skolem FUNCTION sk2(d18063)
+    5. drop ∀ (prenex)     : (¬Document(d18063) ∨ (Revision(sk2(d18063),d18063) ∧ Document(sk2(d18063))))
+    6. distribute ∨ over ∧ : (¬Document(x) ∨ Revision(sk2(x),x))  ∧  (¬Document(x) ∨ Document(sk2(x)))
+
+  KB                           strategy  outcome    clauses gen res. steps    unifs
+  finite (S1-S5)               none      SATURATED           94        568      568
+  finite (S1-S5)               sos       SATURATED            1          1        1
+  with function symbol (+S6)   none      CAP                848       3001     4398
+  with function symbol (+S6)   sos       SATURATED            1          1        1
+   Finite Herbrand universe {SK1, R1}: saturation ends -> "not entailed" (decided).
+   With the Skolem function sk2(d): Document(sk2(R1)), Document(sk2(sk2(R1))), ... never ends -> cap reached, no verdict.
+   => first-order entailment is only SEMI-decidable: a proof is found if KB |= α, but there is no guarantee of halting if KB ⊭ α.
+
+[5] Equivalent small domain: propositional resolution (Task 2 prover) on the Herbrand instances over {SK1, R1}
+   ground clauses over 2 constants = 16   (first-order clauses = 9)
+   FIFO, no subsumption       proved=True  clauses generated=224  attempts=1180  time=2.11 ms
+   unit-pref + subsumption    proved=True  clauses generated=36  attempts=40  time=0.22 ms
+   set-of-support (propositional)  proved=True  clauses generated=25  attempts=25
+   first-order (no strategy): 178 clauses, 1153 steps;  first-order (SoS+unit): 17 clauses, 17 steps.
+   Lifting keeps the clause set independent of the number of constants (propositional ground set grows k^vars) but each step costs a unification.
+
+plots written: plots/task5_proof_tree.png

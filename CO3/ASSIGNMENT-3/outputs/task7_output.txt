@@ -1,0 +1,142 @@
+====================================================================================================
+TASK 7  -  Hospital medication-safety advisor (educational prototype, not clinical guidance)
+====================================================================================================
+
+[40 rules]  actual rules = 40, facts = 139, KB build memory = 52 KiB (peak 52 KiB)
+  id   case                                                       verdict expected          reasons found                      goals unifs     ms expl ok
+  T01  penicillin allergy + amoxicillin                           UNSAFE  allergy           allergy                               26    29  0.263    4 PASS
+  T02  penicillin allergy + cefalexin (cross-reactive)            UNSAFE  cross_allergy     cross_allergy                         24    27  0.327    5 PASS
+  T03  warfarin + aspirin                                         UNSAFE  interaction       bleeding_risk,interaction             33    38  0.267    3 PASS
+  T04  ibuprofen while on warfarin                                UNSAFE  interaction       interaction                           33    36  0.290    6 PASS
+  T05  sildenafil + nitroglycerin                                 UNSAFE  interaction       interaction,severe_hypotension        31    35  0.264    3 PASS
+  T06  nitroglycerin + sildenafil                                 UNSAFE  interaction       interaction,severe_hypotension        31    35  0.257    3 PASS
+  T07  lisinopril + potassium chloride                            UNSAFE  interaction       hyperkalaemia,interaction             31    35  0.259    3 PASS
+  T08  simvastatin + clarithromycin                               UNSAFE  interaction       interaction,myopathy_risk             31    35  0.280    3 PASS
+  T09  tramadol + sertraline                                      UNSAFE  interaction       interaction,serotonin_syndrome        31    36  0.261    3 PASS
+  T10  codeine + diazepam                                         UNSAFE  interaction       interaction,respiratory_depressio     31    35  0.275    3 PASS
+  T11  metformin + renal impairment                               UNSAFE  contraindicated   contraindicated,lactic_acidosis_r     27    30  0.257    3 PASS
+  T12  ibuprofen + peptic ulcer                                   UNSAFE  contraindicated   contraindicated,gi_bleed              27    32  0.244    3 PASS
+  T13  aspirin, age 9, viral infection                            UNSAFE  reye_syndrome     reye_syndrome                         28    31  0.254    5 PASS
+  T14  ciprofloxacin, age 8                                       UNSAFE  paediatric        paediatric                            25    27  0.246    6 PASS
+  T15  diazepam, age 80                                           UNSAFE  geriatric         geriatric                             25    26  0.246    6 PASS
+  T16  isotretinoin, pregnant                                     UNSAFE  pregnancy         pregnancy,teratogenic_absolute        25    28  0.216    3 PASS
+  T17  lisinopril, pregnant                                       UNSAFE  pregnancy         pregnancy                             25    27  0.220    5 PASS
+  T18  simvastatin, pregnant                                      UNSAFE  pregnancy         pregnancy                             25    27  0.230    5 PASS
+  T19  ibuprofen + aspirin (duplicate NSAID)                      UNSAFE  duplicate_therapy duplicate_therapy                     33    37  0.288    6 PASS
+  T20  multi-hazard: warfarin + aspirin + ibuprofen, renal impai  UNSAFE  bleeding_risk     bleeding_risk,interaction             47    55  0.373    3 PASS
+  T21  paracetamol, healthy adult                                 SAFE    -                 -                                     21    22  0.175    0 PASS
+  T22  amoxicillin, no allergy                                    SAFE    -                 -                                     23    24  0.196    0 PASS
+  T23  metformin, normal renal function                           SAFE    -                 -                                     25    29  0.207    0 PASS
+  T24  lisinopril, adult, not pregnant                            SAFE    -                 -                                     23    24  0.193    0 PASS
+  T25  sertraline with paracetamol                                SAFE    -                 -                                     31    35  0.265    0 PASS
+  T26  ibuprofen, healthy 30-year-old                             SAFE    -                 -                                     25    26  0.208    0 PASS
+  T27  aspirin, age 40, no infection                              SAFE    -                 -                                     23    25  0.199    0 PASS
+  T28  warfarin with vitamin C                                    SAFE    -                 -                                     33    37  0.253    0 PASS
+  T29  sildenafil with metformin                                  SAFE    -                 -                                     31    35  0.267    0 PASS
+  T30  diazepam, age 40                                           SAFE    -                 -                                     23    24  0.197    0 PASS
+  T31  ciprofloxacin, age 35                                      SAFE    -                 -                                     23    25  0.195    0 PASS
+  T32  simvastatin with amoxicillin                               SAFE    -                 -                                     31    35  0.257    0 PASS
+  T33  boundary: ciprofloxacin, age 12 (rule needs <12)           SAFE    -                 -                                     23    25  0.201    0 PASS
+  T34  boundary: diazepam, age 75 (rule needs >74)                UNSAFE  geriatric         geriatric                             25    26  0.228    6 PASS
+  => 34/34 test cases pass (all three engines also agree on every case)
+  mean latency   indexed BC (design)    0.246 ms | unindexed BC    0.304 ms | forward chaining     0.283 ms
+  mean steps     indexed BC (design)     58.9    | unindexed BC     83.7    | forward chaining     107.7   (BC: goals+unifications; FC: unifications+firings+rule scans)
+  mean explanation length = 2.6 lines (proof of the first reason)
+
+[400 rules]  actual rules = 400, facts = 499, KB build memory = 273 KiB (peak 273 KiB)
+  id   case                                                       verdict expected          reasons found                      goals unifs     ms expl ok
+  T01  penicillin allergy + amoxicillin                           UNSAFE  allergy           allergy                               26    29  0.256    4 PASS
+  T02  penicillin allergy + cefalexin (cross-reactive)            UNSAFE  cross_allergy     cross_allergy                         24    27  0.409    5 PASS
+  T03  warfarin + aspirin                                         UNSAFE  interaction       bleeding_risk,interaction             33    38  0.378    3 PASS
+  T04  ibuprofen while on warfarin                                UNSAFE  interaction       interaction                           33    36  0.361    6 PASS
+  T05  sildenafil + nitroglycerin                                 UNSAFE  interaction       interaction,severe_hypotension        31    35  0.354    3 PASS
+  T06  nitroglycerin + sildenafil                                 UNSAFE  interaction       interaction,severe_hypotension        31    35  0.362    3 PASS
+  T07  lisinopril + potassium chloride                            UNSAFE  interaction       hyperkalaemia,interaction             31    35  0.350    3 PASS
+  T08  simvastatin + clarithromycin                               UNSAFE  interaction       interaction,myopathy_risk             31    35  0.355    3 PASS
+  T09  tramadol + sertraline                                      UNSAFE  interaction       interaction,serotonin_syndrome        31    36  0.355    3 PASS
+  T10  codeine + diazepam                                         UNSAFE  interaction       interaction,respiratory_depressio     31    35  0.488    3 PASS
+  T11  metformin + renal impairment                               UNSAFE  contraindicated   contraindicated,lactic_acidosis_r     27    30  0.391    3 PASS
+  T12  ibuprofen + peptic ulcer                                   UNSAFE  contraindicated   contraindicated,gi_bleed              27    32  0.332    3 PASS
+  T13  aspirin, age 9, viral infection                            UNSAFE  reye_syndrome     reye_syndrome                         28    31  0.336    5 PASS
+  T14  ciprofloxacin, age 8                                       UNSAFE  paediatric        paediatric                            25    27  0.313    6 PASS
+  T15  diazepam, age 80                                           UNSAFE  geriatric         geriatric                             25    26  0.300    6 PASS
+  T16  isotretinoin, pregnant                                     UNSAFE  pregnancy         pregnancy,teratogenic_absolute        25    28  0.433    3 PASS
+  T17  lisinopril, pregnant                                       UNSAFE  pregnancy         pregnancy                             25    27  0.308    5 PASS
+  T18  simvastatin, pregnant                                      UNSAFE  pregnancy         pregnancy                             25    27  0.297    5 PASS
+  T19  ibuprofen + aspirin (duplicate NSAID)                      UNSAFE  duplicate_therapy duplicate_therapy                     33    37  0.404    6 PASS
+  T20  multi-hazard: warfarin + aspirin + ibuprofen, renal impai  UNSAFE  bleeding_risk     bleeding_risk,interaction             47    55  0.499    3 PASS
+  T21  paracetamol, healthy adult                                 SAFE    -                 -                                     21    22  0.236    0 PASS
+  T22  amoxicillin, no allergy                                    SAFE    -                 -                                     23    24  0.250    0 PASS
+  T23  metformin, normal renal function                           SAFE    -                 -                                     25    29  0.296    0 PASS
+  T24  lisinopril, adult, not pregnant                            SAFE    -                 -                                     23    24  0.420    0 PASS
+  T25  sertraline with paracetamol                                SAFE    -                 -                                     31    35  0.329    0 PASS
+  T26  ibuprofen, healthy 30-year-old                             SAFE    -                 -                                     25    26  0.351    0 PASS
+  T27  aspirin, age 40, no infection                              SAFE    -                 -                                     23    25  0.266    0 PASS
+  T28  warfarin with vitamin C                                    SAFE    -                 -                                     33    37  0.405    0 PASS
+  T29  sildenafil with metformin                                  SAFE    -                 -                                     31    35  0.310    0 PASS
+  T30  diazepam, age 40                                           SAFE    -                 -                                     23    24  0.258    0 PASS
+  T31  ciprofloxacin, age 35                                      SAFE    -                 -                                     23    25  0.270    0 PASS
+  T32  simvastatin with amoxicillin                               SAFE    -                 -                                     31    35  0.337    0 PASS
+  T33  boundary: ciprofloxacin, age 12 (rule needs <12)           SAFE    -                 -                                     23    25  0.265    0 PASS
+  T34  boundary: diazepam, age 75 (rule needs >74)                UNSAFE  geriatric         geriatric                             25    26  0.304    6 PASS
+  => 34/34 test cases pass (all three engines also agree on every case)
+  mean latency   indexed BC (design)    0.341 ms | unindexed BC    1.593 ms | forward chaining     1.679 ms
+  mean steps     indexed BC (design)     58.9    | unindexed BC    443.7    | forward chaining     690.0   (BC: goals+unifications; FC: unifications+firings+rule scans)
+  mean explanation length = 2.6 lines (proof of the first reason)
+
+[2000 rules]  actual rules = 2000, facts = 2099, KB build memory = 1886 KiB (peak 1886 KiB)
+  id   case                                                       verdict expected          reasons found                      goals unifs     ms expl ok
+  T01  penicillin allergy + amoxicillin                           UNSAFE  allergy           allergy                               26    29  0.505    4 PASS
+  T02  penicillin allergy + cefalexin (cross-reactive)            UNSAFE  cross_allergy     cross_allergy                         24    27  0.314    5 PASS
+  T03  warfarin + aspirin                                         UNSAFE  interaction       bleeding_risk,interaction             33    38  0.381    3 PASS
+  T04  ibuprofen while on warfarin                                UNSAFE  interaction       interaction                           33    36  0.403    6 PASS
+  T05  sildenafil + nitroglycerin                                 UNSAFE  interaction       interaction,severe_hypotension        31    35  0.291    3 PASS
+  T06  nitroglycerin + sildenafil                                 UNSAFE  interaction       interaction,severe_hypotension        31    35  0.276    3 PASS
+  T07  lisinopril + potassium chloride                            UNSAFE  interaction       hyperkalaemia,interaction             31    35  0.262    3 PASS
+  T08  simvastatin + clarithromycin                               UNSAFE  interaction       interaction,myopathy_risk             31    35  0.265    3 PASS
+  T09  tramadol + sertraline                                      UNSAFE  interaction       interaction,serotonin_syndrome        31    36  0.267    3 PASS
+  T10  codeine + diazepam                                         UNSAFE  interaction       interaction,respiratory_depressio     31    35  0.265    3 PASS
+  T11  metformin + renal impairment                               UNSAFE  contraindicated   contraindicated,lactic_acidosis_r     27    30  0.243    3 PASS
+  T12  ibuprofen + peptic ulcer                                   UNSAFE  contraindicated   contraindicated,gi_bleed              27    32  0.256    3 PASS
+  T13  aspirin, age 9, viral infection                            UNSAFE  reye_syndrome     reye_syndrome                         28    31  0.465    5 PASS
+  T14  ciprofloxacin, age 8                                       UNSAFE  paediatric        paediatric                            25    27  0.308    6 PASS
+  T15  diazepam, age 80                                           UNSAFE  geriatric         geriatric                             25    26  0.244    6 PASS
+  T16  isotretinoin, pregnant                                     UNSAFE  pregnancy         pregnancy,teratogenic_absolute        25    28  0.313    3 PASS
+  T17  lisinopril, pregnant                                       UNSAFE  pregnancy         pregnancy                             25    27  0.492    5 PASS
+  T18  simvastatin, pregnant                                      UNSAFE  pregnancy         pregnancy                             25    27  0.240    5 PASS
+  T19  ibuprofen + aspirin (duplicate NSAID)                      UNSAFE  duplicate_therapy duplicate_therapy                     33    37  0.407    6 PASS
+  T20  multi-hazard: warfarin + aspirin + ibuprofen, renal impai  UNSAFE  bleeding_risk     bleeding_risk,interaction             47    55  0.496    3 PASS
+  T21  paracetamol, healthy adult                                 SAFE    -                 -                                     21    22  0.245    0 PASS
+  T22  amoxicillin, no allergy                                    SAFE    -                 -                                     23    24  0.415    0 PASS
+  T23  metformin, normal renal function                           SAFE    -                 -                                     25    29  0.432    0 PASS
+  T24  lisinopril, adult, not pregnant                            SAFE    -                 -                                     23    24  0.442    0 PASS
+  T25  sertraline with paracetamol                                SAFE    -                 -                                     31    35  0.334    0 PASS
+  T26  ibuprofen, healthy 30-year-old                             SAFE    -                 -                                     25    26  0.277    0 PASS
+  T27  aspirin, age 40, no infection                              SAFE    -                 -                                     23    25  0.259    0 PASS
+  T28  warfarin with vitamin C                                    SAFE    -                 -                                     33    37  0.331    0 PASS
+  T29  sildenafil with metformin                                  SAFE    -                 -                                     31    35  0.541    0 PASS
+  T30  diazepam, age 40                                           SAFE    -                 -                                     23    24  0.423    0 PASS
+  T31  ciprofloxacin, age 35                                      SAFE    -                 -                                     23    25  0.308    0 PASS
+  T32  simvastatin with amoxicillin                               SAFE    -                 -                                     31    35  0.538    0 PASS
+  T33  boundary: ciprofloxacin, age 12 (rule needs <12)           SAFE    -                 -                                     23    25  0.254    0 PASS
+  T34  boundary: diazepam, age 75 (rule needs >74)                UNSAFE  geriatric         geriatric                             25    26  0.409    6 PASS
+  => 34/34 test cases pass (all three engines also agree on every case)
+  mean latency   indexed BC (design)    0.350 ms | unindexed BC    6.948 ms | forward chaining     7.419 ms
+  mean steps     indexed BC (design)     58.9    | unindexed BC   2043.7    | forward chaining    3278.3   (BC: goals+unifications; FC: unifications+firings+rule scans)
+  mean explanation length = 2.6 lines (proof of the first reason)
+
+  Example explanation (T20, multi-hazard, 2000-rule KB):
+     rule S-warfarin-bleeding_risk: Unsafe(warfarin,t20,bleeding_risk)  <=  Prescribed(t20,warfarin) ∧ Takes(t20,aspirin)
+     fact   Prescribed(t20,warfarin)
+     fact   Takes(t20,aspirin)
+
+[50,000 patients]  2000-rule KB + 50,000 synthetic patient records
+  facts in KB = 203,740   memory: rules+drug knowledge 1.8 MiB, with 50,000 patients 53.6 MiB
+  patients loaded  mean latency ms  mean goals
+              500            0.444        38.7
+            5,000            0.426        39.8
+           50,000            0.415        40.0
+  Latency does not grow with the number of patients: every rule body starts from Prescribed(p,d) / Age(p,a) with p bound,
+  so the first-argument fact index touches only that patient's handful of facts.
+
+plots written: plots/task7_scaling.png

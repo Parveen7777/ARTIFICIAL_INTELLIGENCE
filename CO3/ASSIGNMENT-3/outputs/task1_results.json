@@ -1,0 +1,213 @@
+{
+ "counts": [
+  {
+   "n": 2,
+   "symbols": 16,
+   "sentences": 17,
+   "models": 65536
+  },
+  {
+   "n": 3,
+   "symbols": 36,
+   "sentences": 57,
+   "models": 68719476736
+  },
+  {
+   "n": 4,
+   "symbols": 64,
+   "sentences": 155,
+   "models": 18446744073709551616
+  },
+  {
+   "n": 5,
+   "symbols": 100,
+   "sentences": 353,
+   "models": 1267650600228229401496703205376
+  }
+ ],
+ "runs": [
+  {
+   "n": 2,
+   "qtype": "ENTAILED",
+   "mode": "full",
+   "m": 16,
+   "models": 65634,
+   "time": 0.012214340999946671,
+   "verdict": "safe entailed"
+  },
+  {
+   "n": 2,
+   "qtype": "ENTAILED",
+   "mode": "relevant",
+   "m": 8,
+   "models": 257,
+   "time": 3.99159999915355e-05,
+   "verdict": "safe entailed"
+  },
+  {
+   "n": 2,
+   "qtype": "NEGATION ENTAILED",
+   "mode": "full",
+   "m": 16,
+   "models": 90466,
+   "time": 0.01787998500003596,
+   "verdict": "negation entailed (unsafe)"
+  },
+  {
+   "n": 2,
+   "qtype": "NEGATION ENTAILED",
+   "mode": "relevant",
+   "m": 12,
+   "models": 5202,
+   "time": 0.0008899839999685355,
+   "verdict": "negation entailed (unsafe)"
+  },
+  {
+   "n": 2,
+   "qtype": "NEITHER",
+   "mode": "full",
+   "m": 16,
+   "models": 25126,
+   "time": 0.0045831030000158535,
+   "verdict": "neither entailed"
+  },
+  {
+   "n": 2,
+   "qtype": "NEITHER",
+   "mode": "relevant",
+   "m": 10,
+   "models": 39,
+   "time": 1.5087999997831503e-05,
+   "verdict": "neither entailed"
+  },
+  {
+   "n": 3,
+   "qtype": "ENTAILED",
+   "mode": "full",
+   "m": 36,
+   "models": 68719476736,
+   "time": null,
+   "verdict": "infeasible",
+   "est_seconds": 25069.524794100234
+  },
+  {
+   "n": 3,
+   "qtype": "ENTAILED",
+   "mode": "relevant",
+   "m": 8,
+   "models": 257,
+   "time": 3.6114000010911695e-05,
+   "verdict": "safe entailed"
+  },
+  {
+   "n": 3,
+   "qtype": "NEGATION ENTAILED",
+   "mode": "full",
+   "m": 36,
+   "models": 68719476736,
+   "time": null,
+   "verdict": "infeasible",
+   "est_seconds": 25069.524794100234
+  },
+  {
+   "n": 3,
+   "qtype": "NEGATION ENTAILED",
+   "mode": "relevant",
+   "m": 18,
+   "models": 295425,
+   "time": 0.06818378099995925,
+   "verdict": "negation entailed (unsafe)"
+  },
+  {
+   "n": 3,
+   "qtype": "NEITHER",
+   "mode": "full",
+   "m": 36,
+   "models": 68719476736,
+   "time": null,
+   "verdict": "infeasible",
+   "est_seconds": 25069.524794100234
+  },
+  {
+   "n": 3,
+   "qtype": "NEITHER",
+   "mode": "relevant",
+   "m": 10,
+   "models": 3,
+   "time": 6.606999932046165e-06,
+   "verdict": "neither entailed"
+  },
+  {
+   "n": 4,
+   "qtype": "ENTAILED",
+   "mode": "full",
+   "m": 64,
+   "models": 18446744073709551616,
+   "time": null,
+   "verdict": "infeasible",
+   "est_seconds": 6729549319807.603
+  },
+  {
+   "n": 4,
+   "qtype": "ENTAILED",
+   "mode": "relevant",
+   "m": 8,
+   "models": 257,
+   "time": 3.487800000812058e-05,
+   "verdict": "safe entailed"
+  },
+  {
+   "n": 4,
+   "qtype": "NEGATION ENTAILED",
+   "mode": "full",
+   "m": 64,
+   "models": 18446744073709551616,
+   "time": null,
+   "verdict": "infeasible",
+   "est_seconds": 6729549319807.603
+  },
+  {
+   "n": 4,
+   "qtype": "NEGATION ENTAILED",
+   "mode": "relevant",
+   "m": 18,
+   "models": 295425,
+   "time": 0.0659067039999286,
+   "verdict": "negation entailed (unsafe)"
+  },
+  {
+   "n": 4,
+   "qtype": "NEITHER",
+   "mode": "full",
+   "m": 64,
+   "models": 18446744073709551616,
+   "time": null,
+   "verdict": "infeasible",
+   "est_seconds": 6729549319807.603
+  },
+  {
+   "n": 4,
+   "qtype": "NEITHER",
+   "mode": "relevant",
+   "m": 10,
+   "models": 3,
+   "time": 6.994999978360283e-06,
+   "verdict": "neither entailed"
+  }
+ ],
+ "part_b": {
+  "steps_total": 49,
+  "steps_22": 9,
+  "steps_13": 9,
+  "steps_both": 14,
+  "counts": {
+   "Modus Ponens": 1,
+   "And-Elimination": 25,
+   "Unit Resolution": 15,
+   "Biconditional-Elim": 6,
+   "And-Introduction": 2
+  },
+  "mc_relevant_models": 295425,
+  "mc_full_models": 68719476736
+ }
+}
